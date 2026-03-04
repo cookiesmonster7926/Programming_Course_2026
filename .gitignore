@@ -11,6 +11,5 @@ __pycache__/
 venv/
 ENV/
 
-# Week 01 files
-Week01_0306_demo/main.py
-Week01_0306_demo/pyproject.toml
+# Week 02 files
+Week02_0306_demo/main.py

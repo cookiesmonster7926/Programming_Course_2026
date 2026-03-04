@@ -21,9 +21,9 @@ Click the folder links in the table below to access the specific code and detail
 
 | Week | Directory / Link | Topic & Learning Objectives |
 | :--- | :--- | :--- |
-| **Week 01** | [📂 Week01_0306_demo](./Week01_0306_demo/) | Environment setup, basic `uv` usage, Speed Typing Challenge GUI |
-| **Week 02** | � *Coming this Sunday* | - |
-| **Week 03** | 🚧 *Coming later* | - |
+| **Week 02** | [📂 Week02_0306_demo](./Week02_0306_demo/) | Environment setup, basic `uv` usage, Speed Typing Challenge GUI |
+| **Week 03** | 🚧 *Coming this Sunday* | - |
+| **Week 04** | 🚧 *Coming later* | - |
 
 *(This table will be continuously updated by the TA...)*
 
@@ -69,5 +69,5 @@ uv sync
 To execute a specific week's script, make sure you are in the root `Programming_Course_2026` directory, and use the `uv run` command followed by the file path. For example:
 
 ```bash
-uv run Week01_0306_demo/main.py
+uv run Week02_0306_demo/main.py
 ```

@@ -1,4 +1,4 @@
-# 🚧 Week 03 Demo - Under Construction
+# 🚧 Week 02 Demo - Under Construction
 
 > [!NOTE]
 > ### 👷‍♂️ 工作區建置中 / Work in Progress
