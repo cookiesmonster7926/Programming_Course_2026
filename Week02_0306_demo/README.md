@@ -1,83 +1,85 @@
-# Week 2 (03/06) - 基礎程式設計實習
+# Week 2 (03/06) - Basic Programming Lab
 
-## 📝 實作說明 (Implementation Steps)
+**English** | [繁體中文](README_zh-TW.md)
 
-### Step 1: 安裝與環境檢查
-* **要做什麼**：根據你的作業系統安裝現代化 Python 管理工具 `uv`。
-* **要有什麼**：在終端機 (Terminal / PowerShell) 輸入 `uv --version` 後，必須成功出現版本 (如 `uv 0.10.7`)。
+## 📝 Implementation Steps
 
-### Step 2: 初始化專案資料夾
-* **要做什麼**：使用 `uv` 初始化一個全新的專案，並指定 Python 版本 (建議使用 `3.11`)。
-* **要有什麼**：
-  * 專案資料夾內自動生成 `pyproject.toml` (設定檔)。
-  * 專案資料夾內自動生成 `main.py` (程式進入點)。
+### Step 1: Installation and Environment Check
+* **What to do**: Install the modern Python package manager `uv` according to your operating system.
+* **What to expect**: After typing `uv --version` in your Terminal / PowerShell, the version number (e.g., `uv 0.10.7`) must successfully appear.
 
-### Step 3: 程式碼移植與套件管理
-* **要做什麼**：
-  * 將上學期「打字挑戰」的內容移入 `main.py`。
-  * 使用 `uv` 安裝專案所需的第三方套件 (如 `matplotlib` 等)。
-* **要有什麼**：
-  * `uv.lock` 檔案：這是專案的「環境 DNA」，確保跨電腦執行時版本完全一致。
-  * 完整程式：包含題目顯示、倒數計時 (使用 `after`) 與成績結算畫面。
+### Step 2: Initialize Project Folder
+* **What to do**: Use `uv` to initialize a brand new project and specify the Python version (recommend using `3.11`).
+* **What to expect**:
+  * `pyproject.toml` (configuration file) is automatically generated in the project folder.
+  * `main.py` (program entry point) is automatically generated in the project folder.
 
-### Step 4: 建立專案虛擬環境
-* **要做什麼**：在專案目錄下建立並啟動專屬於此專案的虛擬環境。
-* **要有什麼**：
-  * 目錄下出現隱藏資料夾 `.venv/`。
-  * 成功啟動環境：終端機提示字元應出現專案名稱括號，例如 `(typing_game)`。
+### Step 3: Code Migration and Package Management
+* **What to do**:
+  * Migrate the content of the "Typing Challenge" from last semester into `main.py`.
+  * Use `uv` to install third-party packages required for the project (such as `matplotlib`, etc.).
+* **What to expect**:
+  * `uv.lock` file: This is the "Environment DNA" of the project, ensuring consistency across different computers.
+  * Complete program: Includes the question display, countdown timer (using `after`), and the final score screen.
 
-### Step 5: 上傳至 GitHub
-* **要做什麼**：將整個專案推送到 GitHub 的公開 repository。
-* **要有什麼**：
-  * GitHub 上的專案必須包含：`pyproject.toml`, `uv.lock`, `main.py`, `.gitignore`, `README.md`。
-  * ❌ **重要**：透過 `.gitignore` 排除上傳 `.venv` 資料夾，只上傳設定檔。
+### Step 4: Create Project Virtual Environment
+* **What to do**: Create and activate a virtual environment specifically for this project inside the project directory.
+* **What to expect**:
+  * A hidden folder `.venv/` appears in the directory.
+  * Environment successfully activated: Your terminal prompt should show the project name in parentheses, for example `(typing_game)`.
 
----
-
-## 🎮 Exercise 1: SPEED TYPING CHALLENGE (打字遊戲)
-
-你們要自己做一個「打字遊戲」。
-
-### 🎯 必做目標 (缺一不可，否則視為任務失敗！)
-- [ ] Tkinter 視窗顯示 (不能只有終端機)
-- [ ] 倒數計時功能
-- [ ] 回合數輸入功能
-- [ ] 正確 / 錯誤提示回饋
-- [ ] 至少完成一種類型的難度
-- [ ] 最後的成績結算畫面
-- [ ] 題目顯示區 & 輸入框
-- [ ] 即時顏色回饋 (逐字變色)
-- [ ] 顯示打字速度 (WPM)
-- [ ] 動畫效果 (UI 優化)
-- [ ] 多難度系統 (如NORMAL, HARD, NIGHTMARE)
-- [ ] 自訂題庫
-
-### 📊 難度說明參考：
-* **NORMAL (普通)**：顯示單一英文單字 (時間限制：10秒/題)
-* **HARD (困難)**：顯示兩個單字的片語 (時間限制：10秒/題)
-* **NIGHTMARE (惡夢)**：顯示完整的英文短句 (時間限制：15秒/題)
+### Step 5: Upload to GitHub
+* **What to do**: Push the entire project to a public repository on GitHub.
+* **What to expect**:
+  * The project on GitHub must contain: `pyproject.toml`, `uv.lock`, `main.py`, `.gitignore`, `README.md`.
+  * ❌ **IMPORTANT**: Ensure the `.venv` folder is excluded using `.gitignore`. Only upload configuration files and source code.
 
 ---
 
-## ✅ 自我驗證階段
-模擬在其他設備執行：
-1. **切換目錄**：在你的電腦中找一個完全不同的資料夾 (例如從桌面換到下載區)。
-2. **重新複製專案**：`git clone` 你自己的 GitHub repository。
-3. **重建與同步環境**：進入資料夾執行 `uv sync` (這會自動根據 `uv.lock` 重建環境)。
-4. **執行測試**：執行 `uv run main.py`
+## 🎮 Exercise 1: SPEED TYPING CHALLENGE
 
-🎉 **成功標準**：不需要手動安裝任何 Python 或套件，程式就能直接成功啟動！
+You need to build a "Typing Game" by yourself.
+
+### 🎯 Mandatory Objectives (All are required, otherwise the task is considered failed!)
+- [ ] Tkinter GUI display (Cannot just use the terminal)
+- [ ] Countdown timer functionality
+- [ ] Number of rounds input functionality
+- [ ] Correct / Incorrect feedback prompts
+- [ ] Implement at least one difficulty level
+- [ ] Final score summary screen
+- [ ] Question display area & Input box
+- [ ] Real-time color feedback (Changing color character by character)
+- [ ] Display typing speed (WPM)
+- [ ] Animation effects (UI Optimization)
+- [ ] Multi-difficulty system (e.g., NORMAL, HARD, NIGHTMARE)
+- [ ] Custom question bank
+
+### 📊 Difficulty Level Reference:
+* **NORMAL**: Displays a single English word (Time limit: 10 seconds/question)
+* **HARD**: Displays a phrase with two words (Time limit: 10 seconds/question)
+* **NIGHTMARE**: Displays a full English sentence (Time limit: 15 seconds/question)
 
 ---
 
-## 📤 繳交說明
+## ✅ Self-Verification Stage
+Simulate running on another device:
+1. **Switch directory**: Find a completely different folder on your computer (e.g., switch from Desktop to Downloads).
+2. **Re-clone the project**: `git clone` your own GitHub repository.
+3. **Rebuild and sync environment**: Enter the folder and run `uv sync` (this will automatically rebuild the environment based on `uv.lock`).
+4. **Run test**: Execute `uv run main.py`
+
+🎉 **Success Criteria**: The program should launch successfully without needing to manually install any Python version or packages!
+
+---
+
+## 📤 Submission Guidelines
 
 **Submission Deadline:** March 6, 2026 | 3:30 PM
 
-請在 week2 繳交區上傳實習課上課內容的筆記檔案與 GPT 聊天 PDF，包含：
-1. **筆記檔案 (PDF)**：包含每個 Step 的程式碼以及執行結果截圖。
-2. **GPT 聊天內容 (PDF)**
-3. **GitHub 專案網址 (Public)**
-4. **整個專案資料夾** (包含：`README.md`, `main.py`, `pyproject.toml`, `uv.lock`, `.gitignore`)
+Please upload the class notes file and GPT chat PDF to the Week 2 submission area. The submission must include:
+1. **Notes File (PDF)**: Containing the code for each Step and screenshots of the execution results.
+2. **GPT Chat Content (PDF)**
+3. **GitHub Project URL (Public)**
+4. **Entire Project Folder** (Must include: `README.md`, `main.py`, `pyproject.toml`, `uv.lock`, `.gitignore`)
 
-⚠️ *請將所有要繳交的檔案壓縮成一個 zip 檔案後上傳到 iLearn。*
+⚠️ *Please compress all required files into a single `.zip` file before uploading to iLearn.*
