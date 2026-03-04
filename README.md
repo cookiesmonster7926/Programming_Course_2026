@@ -9,7 +9,8 @@ Welcome to the TA workspace for the 2026 Programming Course! This repository is 
 
 Here you will find weekly example code, lab exercises, and supplementary materials provided by the Teaching Assistant. To ensure a smooth and consistent development experience across all operating systems, this project strictly uses [uv](https://astral.sh/uv) to manage Python environments and dependencies.
 
-> 📢 **Update Notice:**
+> [!IMPORTANT]
+> **Update Notice:**
 > Weekly example code and materials will be uploaded to this repository every **Sunday**. Please remember to run `git pull` regularly to sync the latest updates!
 
 ---
@@ -21,8 +22,8 @@ Click the folder links in the table below to access the specific code and detail
 | Week | Directory / Link | Topic & Learning Objectives |
 | :--- | :--- | :--- |
 | **Week 01** | [📂 Week01_0306_demo](./Week01_0306_demo/) | Environment setup, basic `uv` usage, Speed Typing Challenge GUI |
-| **Week 11** | [📂 Week11_MemoryGame](./Week11_MemoryGame/) | Tkinter GUI development, Memory Game implementation |
-| **Week 12** | 🚧 *Coming this Sunday* | - |
+| **Week 02** | � *Coming this Sunday* | - |
+| **Week 03** | 🚧 *Coming later* | - |
 
 *(This table will be continuously updated by the TA...)*
 
