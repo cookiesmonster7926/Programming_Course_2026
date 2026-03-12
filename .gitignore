@@ -10,6 +10,3 @@ __pycache__/
 # 虛擬環境
 venv/
 ENV/
-
-# Week 02 files
-Week02_0306_demo/main.py
