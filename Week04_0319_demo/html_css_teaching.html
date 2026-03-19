@@ -889,7 +889,8 @@ function renderHtml() {
     stage.appendChild(el);
     const cls = htmlTag==='h1'||htmlTag==='h2'||htmlTag==='h3'?'heading':htmlTag==='button'?'btn':'element';
     const cssSrc = `.${cls} {\n  color: ${htmlColor};\n  background: ${htmlBg};\n  font-size: ${fontSize}px;\n  font-weight: ${fontWeight};\n  font-family: ${fontFamily};\n  text-align: ${textAlign};\n  padding: 12px 20px;\n  border-radius: 8px;\n  display: inline-block;${italic?'\n  font-style: italic;':''}${underline?'\n  text-decoration: underline;':''}\n}`;
-    document.getElementById('html-code').innerHTML = syntaxHtml(`<${htmlTag} class="${cls}">\n  ${esc(content)}\n</${htmlTag}>`);
+    const hrefAttr = htmlTag === 'a' ? ` href="#"` : '';
+    document.getElementById('html-code').innerHTML = syntaxHtml(`<${htmlTag}${hrefAttr} class="${cls}">\n  ${esc(content)}\n</${htmlTag}>`);
     document.getElementById('css-code').innerHTML = syntaxCss(cssSrc);
   } else {
     // No CSS — show raw element
@@ -902,7 +903,8 @@ function renderHtml() {
     banner.className = 'css-off-banner';
     banner.textContent = '⚠️ CSS 已關閉 — 純 HTML 預設樣式';
     stage.appendChild(banner);
-    document.getElementById('html-code').innerHTML = syntaxHtml(`<${htmlTag}>\n  ${esc(content)}\n</${htmlTag}>`);
+    const hrefAttrPlain = htmlTag === 'a' ? ` href="#"` : '';
+    document.getElementById('html-code').innerHTML = syntaxHtml(`<${htmlTag}${hrefAttrPlain}>\n  ${esc(content)}\n</${htmlTag}>`);
     document.getElementById('css-code').innerHTML = `<span style="color:var(--text-dim);font-style:italic">/* CSS 已關閉，元素使用瀏覽器預設樣式 */\n/* 開啟 CSS 後，才會套用這些樣式 */</span>`;
   }
 }
@@ -953,7 +955,8 @@ function renderFlex() {
     stage.innerHTML = `<div style="width:100%;min-height:80px;">${items}</div>`;
     document.getElementById('css-code').innerHTML = `<span style="color:var(--text-dim);font-style:italic">/* CSS 已關閉 — 子元素以區塊方式堆疊，無 flex 排版 */</span>`;
   }
-  document.getElementById('html-code').innerHTML = syntaxHtml(`<div class="container">\n  <div class="item">1</div>\n  <div class="item">2</div>\n  <div class="item">3</div>\n</div>`);
+  const itemsHtml = Array.from({length:flexItemCount}, (_,i) => `  <div class="item">${i+1}</div>`).join('\n');
+  document.getElementById('html-code').innerHTML = syntaxHtml(`<div class="container">\n${itemsHtml}\n</div>`);
 }
 
 function updatePrompt() {
