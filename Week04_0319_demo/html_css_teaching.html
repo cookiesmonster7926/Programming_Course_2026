@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML & CSS 互動教學平台</title>
+<style>
+/* ══════════════════════════════════════════
+   共用基礎樣式
+   ══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+  --border: #2e3250; --accent: #6c8ef5; --accent2: #f06292;
+  --text: #e8eaf6; --text-dim: #8b92b8;
+  --green: #4caf87; --yellow: #f5c842; --red: #f06292;
+  --code-bg: #0d1020;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg); color: var(--text);
+  height: 100vh; display: grid;
+  grid-template-rows: 54px 1fr; overflow: hidden;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+/* ══════════════════════════════════════════
+   Header
+   ══════════════════════════════════════════ */
+header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 18px; background: var(--surface);
+  border-bottom: 1px solid var(--border); z-index: 20;
+  overflow: hidden;
+}
+.header-logo { font-size: 14px; font-weight: 800; color: var(--accent); white-space: nowrap; }
+.header-logo em { color: var(--accent2); font-style: normal; }
+
+/* Main mode tabs */
+.mode-tabs { display: flex; gap: 3px; border-left: 1px solid var(--border); padding-left: 12px; }
+.mode-tab {
+  padding: 5px 13px; border-radius: 6px; border: none;
+  background: transparent; color: var(--text-dim);
+  font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s;
+}
+.mode-tab:hover { background: var(--surface2); color: var(--text); }
+.mode-tab.active { background: var(--accent); color: #fff; font-weight: 700; }
+
+/* Sub-tabs (playground) */
+.sub-tabs { display: flex; gap: 2px; border-left: 1px solid var(--border); padding-left: 10px; }
+.sub-tab {
+  padding: 5px 11px; border-radius: 5px; border: none;
+  background: transparent; color: var(--text-dim);
+  font-size: 11px; cursor: pointer; transition: all .15s;
+}
+.sub-tab:hover { background: var(--surface2); color: var(--text); }
+.sub-tab.active { background: var(--surface2); color: var(--accent); font-weight: 600; border: 1px solid var(--border); }
+
+/* CSS Toggle */
+.css-toggle-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 5px 12px; border-radius: 20px; margin-left: auto;
+}
+.css-toggle-label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+.toggle-switch { position: relative; width: 38px; height: 20px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider-track {
+  position: absolute; inset: 0; background: #444;
+  border-radius: 20px; cursor: pointer; transition: .2s;
+}
+.slider-track::before {
+  content: ''; position: absolute;
+  width: 14px; height: 14px; left: 3px; top: 3px;
+  background: #fff; border-radius: 50%; transition: .2s;
+}
+.toggle-switch input:checked + .slider-track { background: var(--green); }
+.toggle-switch input:checked + .slider-track::before { transform: translateX(18px); }
+.css-status {
+  font-size: 10px; font-weight: 700; padding: 2px 7px;
+  border-radius: 4px; min-width: 28px; text-align: center;
+}
+.css-status.on { background: var(--green); color: #fff; }
+.css-status.off { background: var(--red); color: #fff; }
+
+/* bg toggle buttons (playground) */
+.bg-toggle { display: flex; gap: 3px; }
+.bg-btn {
+  width: 20px; height: 20px; border-radius: 4px;
+  border: 1px solid var(--border); cursor: pointer; font-size: 9px;
+}
+
+/* ══════════════════════════════════════════
+   Main area — mode switching
+   ══════════════════════════════════════════ */
+#main-area { overflow: hidden; display: grid; }
+
+/* ── PLAYGROUND mode layout ── */
+#pg-layout {
+  display: none; /* shown by JS */
+  grid-template-columns: 290px 1fr;
+  overflow: hidden; height: 100%;
+}
+#pg-layout.active { display: grid; }
+
+/* Controls panel */
+#controls {
+  background: var(--surface); border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.ctrl-section {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden;
+}
+.ctrl-section-header {
+  padding: 8px 12px; font-size: 10px; font-weight: 700;
+  letter-spacing: .8px; text-transform: uppercase; color: var(--text-dim);
+  background: rgba(255,255,255,.03); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 7px;
+}
+.ctrl-section-header .dot { width: 7px; height: 7px; border-radius: 50%; }
+.ctrl-body { padding: 10px 10px; display: flex; flex-direction: column; gap: 9px; }
+.ctrl-row { display: flex; flex-direction: column; gap: 4px; }
+.ctrl-row > label {
+  font-size: 11px; color: var(--text-dim);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.ctrl-row > label span { font-family: monospace; color: var(--accent); font-size: 11px; }
+select, input[type=text] {
+  width: 100%; padding: 5px 8px;
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text); font-size: 12px; outline: none;
+}
+select:focus, input[type=text]:focus { border-color: var(--accent); }
+input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+input[type=color] {
+  width: 34px; height: 26px; border-radius: 5px;
+  border: 1px solid var(--border); background: none; cursor: pointer; padding: 2px;
+}
+.color-row { display: flex; align-items: center; gap: 8px; }
+.color-row label { font-size: 11px; color: var(--text-dim); flex: 1; }
+.toggle-group { display: flex; gap: 5px; flex-wrap: wrap; }
+.toggle-btn {
+  padding: 3px 9px; border-radius: 5px; border: 1px solid var(--border);
+  background: var(--code-bg); color: var(--text-dim);
+  font-size: 11px; cursor: pointer; transition: all .15s; font-family: monospace;
+}
+.toggle-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.preset-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.preset-btn {
+  padding: 3px 9px; border-radius: 5px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-dim); font-size: 11px; cursor: pointer; transition: all .15s;
+}
+.preset-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* Right panel */
+#right-panel {
+  display: grid; grid-template-rows: 1fr 1fr 76px; overflow: hidden;
+}
+#preview-wrap {
+  padding: 16px; display: flex; flex-direction: column; gap: 8px;
+  overflow: auto; border-bottom: 1px solid var(--border);
+}
+.panel-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .8px; color: var(--text-dim);
+  display: flex; align-items: center; gap: 6px;
+}
+.panel-label::before {
+  content: ''; display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--green);
+}
+#preview-stage {
+  flex: 1; background: #fff; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 140px; padding: 24px; overflow: auto; position: relative;
+}
+#preview-stage.dark-bg { background: #1a1a2e; }
+#preview-stage.pattern-bg {
+  background-image: repeating-linear-gradient(45deg,#f0f0f0 25%,transparent 25%,transparent 75%,#f0f0f0 75%,#f0f0f0),
+    repeating-linear-gradient(45deg,#f0f0f0 25%,#fff 25%,#fff 75%,#f0f0f0 75%,#f0f0f0);
+  background-size: 20px 20px; background-position: 0 0, 10px 10px;
+}
+.css-off-banner {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  background: var(--red); color: #fff; font-size: 10px; font-weight: 700;
+  padding: 3px 10px; border-radius: 10px; white-space: nowrap;
+}
+
+#code-wrap {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--border); overflow: hidden;
+}
+.code-pane { display: flex; flex-direction: column; overflow: hidden; }
+.code-pane:first-child { border-right: 1px solid var(--border); }
+.code-header {
+  padding: 5px 12px; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim);
+  background: rgba(255,255,255,.02); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 5px;
+}
+.lang-badge { padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; }
+.html-badge { background: #e44d26; color: #fff; }
+.css-badge  { background: #264de4; color: #fff; }
+#html-code, #css-code {
+  flex: 1; padding: 10px 12px;
+  font-family: 'SF Mono','Fira Code',monospace; font-size: 11.5px;
+  line-height: 1.7; color: var(--text); background: var(--code-bg);
+  overflow: auto; white-space: pre;
+}
+#prompt-wrap {
+  padding: 8px 14px; display: flex; gap: 10px; align-items: center;
+  background: var(--surface); border-top: 1px solid var(--border);
+}
+#prompt-text { flex: 1; font-size: 11px; color: var(--text-dim); line-height: 1.5; font-style: italic; }
+#copy-btn {
+  padding: 6px 14px; border-radius: 6px; border: none;
+  background: var(--accent); color: #fff; font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+#copy-btn:hover { background: #8aa8ff; }
+#copy-btn.copied { background: var(--green); }
+
+/* ── INSPECTOR mode layout ── */
+#insp-layout {
+  display: none;
+  grid-template-columns: 1fr 320px;
+  overflow: hidden; height: 100%;
+}
+#insp-layout.active { display: grid; }
+
+#demo-frame { overflow-y: auto; position: relative; background: #f5f7fa; }
+#demo-frame.css-off-mode { background: #fff; }
+
+/* Hover highlight */
+.hover-highlight {
+  position: fixed; pointer-events: none; z-index: 9999;
+  border: 2px solid #6c8ef5; background: rgba(108,142,245,.10);
+  border-radius: 3px; transition: top .06s,left .06s,width .06s,height .06s;
+  display: none;
+}
+.hover-highlight.scrape-target { border-color: #f5c842; background: rgba(245,200,66,.12); }
+
+/* Inspector panel */
+#inspector {
+  background: var(--surface); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.inspector-header {
+  padding: 10px 14px 8px; border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.inspector-header h2 { font-size: 12px; font-weight: 700; color: var(--accent); }
+.inspector-header p { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+#inspector-body {
+  flex: 1; overflow-y: auto; padding: 10px 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.insp-placeholder {
+  color: var(--text-dim); font-size: 12px; text-align: center;
+  padding: 36px 16px; line-height: 1.9;
+}
+.insp-placeholder .arrow { font-size: 26px; display: block; margin-bottom: 8px; }
+.insp-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+}
+.insp-card-header {
+  padding: 6px 10px; font-size: 10px; font-weight: 700;
+  letter-spacing: .6px; text-transform: uppercase; color: var(--text-dim);
+  background: rgba(255,255,255,.03); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 5px;
+}
+.insp-card-body { padding: 9px 10px; }
+.tag-badge {
+  display: inline-block; padding: 3px 9px; border-radius: 5px;
+  font-family: monospace; font-size: 13px; font-weight: 700;
+  background: #1a2040; border: 1px solid var(--accent); color: var(--accent);
+}
+.scrape-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 700;
+  background: rgba(245,200,66,.15); border: 1px solid var(--yellow); color: var(--yellow);
+}
+.insp-row {
+  display: flex; gap: 7px; align-items: baseline;
+  margin-bottom: 5px; font-size: 11px;
+}
+.insp-row:last-child { margin-bottom: 0; }
+.insp-label {
+  font-size: 9px; color: var(--text-dim); min-width: 52px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+}
+.insp-value { color: var(--text); font-family: monospace; font-size: 11px; word-break: break-all; }
+.insp-value.green { color: var(--green); }
+.insp-value.yellow { color: var(--yellow); }
+.code-block {
+  background: var(--code-bg); border-radius: 6px;
+  padding: 8px 10px; font-family: monospace; font-size: 11px;
+  line-height: 1.7; overflow-x: auto; white-space: pre;
+}
+.selector-path {
+  background: var(--code-bg); border-radius: 5px;
+  padding: 5px 9px; font-family: monospace; font-size: 11px;
+  color: var(--green); word-break: break-all; line-height: 1.5;
+}
+.scrape-tip {
+  background: rgba(245,200,66,.08); border: 1px solid rgba(245,200,66,.3);
+  border-radius: 6px; padding: 7px 9px;
+}
+.scrape-tip p { font-size: 10px; color: var(--yellow); line-height: 1.6; }
+.scrape-tip code {
+  background: rgba(245,200,66,.15); padding: 1px 4px;
+  border-radius: 3px; font-family: monospace;
+}
+
+/* Syntax highlight */
+.hl-tag  { color: #f07178; }
+.hl-attr { color: #ffcb6b; }
+.hl-val  { color: #c3e88d; }
+.hl-sel  { color: #f07178; }
+.hl-prop { color: #82aaff; }
+.hl-pval { color: #c3e88d; }
+</style>
+
+<!-- Demo site CSS (toggleable) -->
+<style id="demo-css">
+#demo-site * { box-sizing: border-box; }
+#demo-site .site-nav {
+  background: #1e3a5f; color: #fff;
+  padding: 0 20px; display: flex; align-items: center;
+  height: 50px; gap: 18px; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+#demo-site .site-logo { font-size: 17px; font-weight: 800; color: #fff; text-decoration: none; }
+#demo-site .site-logo span { color: #f5c842; }
+#demo-site .nav-links { display: flex; gap: 16px; margin-left: auto; }
+#demo-site .nav-links a { color: rgba(255,255,255,.8); text-decoration: none; font-size: 13px; transition: .15s; }
+#demo-site .nav-links a:hover { color: #f5c842; }
+#demo-site .hero {
+  background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+  color: #fff; padding: 36px 20px; text-align: center;
+}
+#demo-site .hero h1 { font-size: 26px; font-weight: 800; margin-bottom: 7px; }
+#demo-site .hero p { font-size: 13px; opacity: .8; }
+#demo-site .container { max-width: 860px; margin: 0 auto; padding: 20px 18px; }
+#demo-site .filter-bar { display: flex; gap: 7px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+#demo-site .filter-bar span { font-size: 12px; color: #666; font-weight: 600; }
+#demo-site .filter-tag {
+  padding: 3px 11px; border-radius: 20px; border: 1px solid #ddd;
+  font-size: 11px; background: #fff; color: #333; cursor: pointer;
+}
+#demo-site .filter-tag.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
+#demo-site .product-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
+}
+#demo-site .product-card {
+  background: #fff; border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08); overflow: hidden;
+  transition: transform .2s, box-shadow .2s; cursor: pointer;
+}
+#demo-site .product-card:hover { transform: translateY(-3px); box-shadow: 0 5px 18px rgba(0,0,0,.12); }
+#demo-site .product-img {
+  width: 100%; height: 130px;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  display: flex; align-items: center; justify-content: center; font-size: 38px;
+}
+#demo-site .product-body { padding: 12px 14px; }
+#demo-site .product-category {
+  display: inline-block; padding: 2px 7px; border-radius: 4px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  background: #e8f0fe; color: #1e3a5f; margin-bottom: 5px;
+}
+#demo-site .product-name { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 5px; line-height: 1.4; }
+#demo-site .product-meta { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+#demo-site .product-rating { color: #f5c842; font-size: 12px; }
+#demo-site .rating-count { font-size: 11px; color: #999; }
+#demo-site .product-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 9px; padding-top: 9px; border-top: 1px solid #f0f0f0;
+}
+#demo-site .product-price { font-size: 17px; font-weight: 800; color: #e53e3e; }
+#demo-site .product-date { font-size: 10px; color: #aaa; }
+#demo-site .stock-badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+#demo-site .stock-badge.in-stock  { background: #d4edda; color: #155724; }
+#demo-site .stock-badge.low-stock { background: #fff3cd; color: #856404; }
+#demo-site .stock-badge.out-stock { background: #f8d7da; color: #721c24; }
+#demo-site .section-title {
+  font-size: 17px; font-weight: 800; color: #1a1a2e;
+  margin: 24px 0 14px; padding-bottom: 7px; border-bottom: 3px solid #1e3a5f;
+}
+#demo-site .news-list { display: flex; flex-direction: column; gap: 10px; }
+#demo-site .news-item {
+  background: #fff; border-radius: 8px; padding: 12px 14px;
+  box-shadow: 0 1px 5px rgba(0,0,0,.06);
+  display: flex; gap: 12px; align-items: flex-start;
+}
+#demo-site .news-item:hover { box-shadow: 0 3px 10px rgba(0,0,0,.1); }
+#demo-site .news-icon { font-size: 26px; flex-shrink: 0; }
+#demo-site .news-content { flex: 1; }
+#demo-site .news-tag {
+  display: inline-block; padding: 1px 6px; border-radius: 3px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  background: #fff3cd; color: #856404; margin-bottom: 4px;
+}
+#demo-site .news-title { font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 3px; line-height: 1.4; }
+#demo-site .news-summary { font-size: 11px; color: #666; line-height: 1.5; }
+#demo-site .news-footer { display: flex; gap: 10px; margin-top: 5px; }
+#demo-site .news-author,
+#demo-site .news-date,
+#demo-site .news-views { font-size: 10px; color: #bbb; }
+#demo-site .site-footer {
+  background: #1a1a2e; color: rgba(255,255,255,.5);
+  text-align: center; padding: 18px; font-size: 11px; margin-top: 30px;
+}
+</style>
+</head>
+<body>
+
+<!-- hover highlight overlay (inspector mode) -->
+<div class="hover-highlight" id="hover-box"></div>
+
+<!-- ══════════════════════════════════════════
+     Header
+     ══════════════════════════════════════════ -->
+<header>
+  <div class="header-logo">HTML <em>&</em> CSS 教學平台</div>
+
+  <!-- Main mode -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="switchMode('playground')">🎨 CSS Playground</button>
+    <button class="mode-tab" onclick="switchMode('inspector')">🔍 網頁偵測器</button>
+  </div>
+
+  <!-- Sub-tabs (playground only) -->
+  <div class="sub-tabs" id="sub-tabs">
+    <button class="sub-tab active" onclick="switchTab('html')">HTML 元素</button>
+    <button class="sub-tab" onclick="switchTab('typography')">文字樣式</button>
+    <button class="sub-tab" onclick="switchTab('box')">盒子模型</button>
+    <button class="sub-tab" onclick="switchTab('layout')">Flexbox</button>
+  </div>
+
+  <!-- bg toggle (playground only) -->
+  <div class="bg-toggle" id="bg-btns">
+    <button class="bg-btn" style="background:#fff" title="白色" onclick="setBg('white')">W</button>
+    <button class="bg-btn" style="background:#1a1a2e;color:#fff" title="深色" onclick="setBg('dark')">D</button>
+    <button class="bg-btn" style="background:repeating-linear-gradient(45deg,#eee 0,#eee 5px,#fff 5px,#fff 10px)" title="格紋" onclick="setBg('pattern')">P</button>
+  </div>
+
+  <!-- CSS toggle (always) -->
+  <div class="css-toggle-wrap">
+    <span class="css-toggle-label">CSS</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="css-toggle" checked onchange="toggleCSS(this.checked)">
+      <span class="slider-track"></span>
+    </label>
+    <span class="css-status on" id="css-status-badge">ON</span>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     Main area
+     ══════════════════════════════════════════ -->
+<div id="main-area">
+
+  <!-- ── PLAYGROUND layout ── -->
+  <div id="pg-layout" class="active">
+    <div id="controls"><!-- filled by JS --></div>
+
+    <div id="right-panel">
+      <div id="preview-wrap">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="panel-label">即時預覽</div>
+        </div>
+        <div id="preview-stage"></div>
+      </div>
+
+      <div id="code-wrap">
+        <div class="code-pane">
+          <div class="code-header"><span class="lang-badge html-badge">HTML</span>程式碼</div>
+          <div id="html-code"></div>
+        </div>
+        <div class="code-pane">
+          <div class="code-header"><span class="lang-badge css-badge">CSS</span>樣式</div>
+          <div id="css-code"></div>
+        </div>
+      </div>
+
+      <div id="prompt-wrap">
+        <div id="prompt-text">調整左側控制項，即時看到 HTML 與 CSS 程式碼變化。</div>
+        <button id="copy-btn" onclick="copyCode()">複製程式碼</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── INSPECTOR layout ── -->
+  <div id="insp-layout">
+    <div id="demo-frame">
+      <div id="demo-site">
+
+        <nav class="site-nav" data-tag="nav" data-class="site-nav" data-desc="導覽列：網站主要選單，通常放 logo 和連結" data-scrape="">
+          <a href="#" class="site-logo" data-tag="a" data-class="site-logo" data-desc="網站 Logo，通常是 &lt;a&gt; 包住網站名稱" data-scrape="網站名稱">Tech<span>市集</span></a>
+          <nav class="nav-links">
+            <a href="#" data-tag="a" data-class="nav-link" data-desc="導覽連結，href 屬性指定連結目的地" data-scrape="">筆記型電腦</a>
+            <a href="#" data-tag="a" data-class="nav-link" data-desc="導覽連結" data-scrape="">手機平板</a>
+            <a href="#" data-tag="a" data-class="nav-link" data-desc="導覽連結" data-scrape="">周邊配件</a>
+            <a href="#" data-tag="a" data-class="nav-link" data-desc="導覽連結" data-scrape="">最新消息</a>
+          </nav>
+        </nav>
+
+        <div class="hero" data-tag="div" data-class="hero" data-desc="Banner 區塊：頁面頂部的大型宣傳區域" data-scrape="">
+          <h1 data-tag="h1" data-class="" data-desc="頁面最重要的標題，一個頁面通常只有一個 &lt;h1&gt;" data-scrape="頁面主標題">🛒 2026 春季特賣會</h1>
+          <p data-tag="p" data-class="" data-desc="段落文字，通用的文字區塊元素" data-scrape="">精選科技商品 ｜ 限時折扣 ｜ 免費配送</p>
+        </div>
+
+        <div class="container">
+          <div class="filter-bar" data-tag="div" data-class="filter-bar" data-desc="篩選列：用來過濾顯示的資料" data-scrape="">
+            <span>分類：</span>
+            <span class="filter-tag active" data-tag="span" data-class="filter-tag" data-desc="篩選標籤按鈕" data-scrape="">全部</span>
+            <span class="filter-tag" data-tag="span" data-class="filter-tag" data-desc="篩選標籤按鈕" data-scrape="">筆電</span>
+            <span class="filter-tag" data-tag="span" data-class="filter-tag" data-desc="篩選標籤按鈕" data-scrape="">手機</span>
+            <span class="filter-tag" data-tag="span" data-class="filter-tag" data-desc="篩選標籤按鈕" data-scrape="">耳機</span>
+          </div>
+
+          <div class="section-title" data-tag="h2" data-class="section-title" data-desc="區段標題，用來分隔頁面不同區域" data-scrape="">熱銷商品</div>
+
+          <div class="product-grid" data-tag="div" data-class="product-grid" data-desc="商品列表容器，使用 CSS Grid 排版子元素" data-scrape="">
+
+            <div class="product-card" data-tag="div" data-class="product-card" data-desc="商品卡片：爬蟲常以此為單位抓取一筆商品資料" data-scrape="商品資料單位">
+              <div class="product-img" data-tag="div" data-class="product-img" data-desc="商品圖片區域" data-scrape="">💻</div>
+              <div class="product-body">
+                <span class="product-category" data-tag="span" data-class="product-category" data-desc="商品分類標籤" data-scrape="商品分類">筆電</span>
+                <h3 class="product-name" data-tag="h3" data-class="product-name" data-desc="商品名稱，重要的爬蟲目標" data-scrape="商品名稱">MacBook Pro 14 吋 M3 晶片</h3>
+                <div class="product-meta">
+                  <span class="product-rating" data-tag="span" data-class="product-rating" data-desc="星級評分，常被爬蟲擷取做比較分析" data-scrape="商品評分">★★★★★</span>
+                  <span class="rating-count" data-tag="span" data-class="rating-count" data-desc="評論數量" data-scrape="評論數">(4.9 / 2,341 則)</span>
+                </div>
+                <span class="stock-badge in-stock" data-tag="span" data-class="stock-badge in-stock" data-desc="庫存狀態標籤，class 名稱本身帶有意義" data-scrape="庫存狀態">有現貨</span>
+                <div class="product-footer">
+                  <span class="product-price" data-tag="span" data-class="product-price" data-desc="商品價格，最常見的爬蟲擷取目標" data-scrape="商品價格">NT$ 62,900</span>
+                  <span class="product-date" data-tag="span" data-class="product-date" data-desc="上架日期，追蹤商品上市時間用" data-scrape="上架日期">2026-03-01</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-card" data-tag="div" data-class="product-card" data-desc="商品卡片：爬蟲常以此為單位抓取一筆商品資料" data-scrape="商品資料單位">
+              <div class="product-img" style="background:linear-gradient(135deg,#f093fb,#f5576c)" data-tag="div" data-class="product-img" data-desc="商品圖片區域" data-scrape="">📱</div>
+              <div class="product-body">
+                <span class="product-category" data-tag="span" data-class="product-category" data-desc="商品分類標籤" data-scrape="商品分類">手機</span>
+                <h3 class="product-name" data-tag="h3" data-class="product-name" data-desc="商品名稱" data-scrape="商品名稱">iPhone 16 Pro 256GB 鈦原色</h3>
+                <div class="product-meta">
+                  <span class="product-rating" data-tag="span" data-class="product-rating" data-desc="星級評分" data-scrape="商品評分">★★★★★</span>
+                  <span class="rating-count" data-tag="span" data-class="rating-count" data-desc="評論數量" data-scrape="評論數">(4.8 / 5,872 則)</span>
+                </div>
+                <span class="stock-badge low-stock" data-tag="span" data-class="stock-badge low-stock" data-desc="庫存狀態" data-scrape="庫存狀態">庫存有限</span>
+                <div class="product-footer">
+                  <span class="product-price" data-tag="span" data-class="product-price" data-desc="商品價格" data-scrape="商品價格">NT$ 36,900</span>
+                  <span class="product-date" data-tag="span" data-class="product-date" data-desc="上架日期" data-scrape="上架日期">2026-02-20</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-card" data-tag="div" data-class="product-card" data-desc="商品卡片：爬蟲常以此為單位抓取一筆商品資料" data-scrape="商品資料單位">
+              <div class="product-img" style="background:linear-gradient(135deg,#4facfe,#00f2fe)" data-tag="div" data-class="product-img" data-desc="商品圖片區域" data-scrape="">🎧</div>
+              <div class="product-body">
+                <span class="product-category" data-tag="span" data-class="product-category" data-desc="商品分類標籤" data-scrape="商品分類">耳機</span>
+                <h3 class="product-name" data-tag="h3" data-class="product-name" data-desc="商品名稱" data-scrape="商品名稱">Sony WH-1000XM5 降噪耳機</h3>
+                <div class="product-meta">
+                  <span class="product-rating" data-tag="span" data-class="product-rating" data-desc="星級評分" data-scrape="商品評分">★★★★☆</span>
+                  <span class="rating-count" data-tag="span" data-class="rating-count" data-desc="評論數量" data-scrape="評論數">(4.6 / 1,203 則)</span>
+                </div>
+                <span class="stock-badge in-stock" data-tag="span" data-class="stock-badge in-stock" data-desc="庫存狀態" data-scrape="庫存狀態">有現貨</span>
+                <div class="product-footer">
+                  <span class="product-price" data-tag="span" data-class="product-price" data-desc="商品價格" data-scrape="商品價格">NT$ 10,900</span>
+                  <span class="product-date" data-tag="span" data-class="product-date" data-desc="上架日期" data-scrape="上架日期">2026-01-15</span>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /product-grid -->
+
+          <div class="section-title" data-tag="h2" data-class="section-title" data-desc="區段標題" data-scrape="">最新科技消息</div>
+          <div class="news-list" data-tag="div" data-class="news-list" data-desc="新聞列表容器，爬蟲一次抓多筆文章的地方" data-scrape="文章列表容器">
+
+            <article class="news-item" data-tag="article" data-class="news-item" data-desc="&lt;article&gt; 語意標籤，代表一篇獨立的文章，比 &lt;div&gt; 更有意義" data-scrape="新聞資料單位">
+              <div class="news-icon">🤖</div>
+              <div class="news-content">
+                <span class="news-tag" data-tag="span" data-class="news-tag" data-desc="文章分類標籤" data-scrape="文章分類">AI 技術</span>
+                <h4 class="news-title" data-tag="h4" data-class="news-title" data-desc="文章標題，爬蟲最常擷取的欄位之一" data-scrape="文章標題">GPT-5 即將發布！效能提升 10 倍，多模態能力大幅進化</h4>
+                <p class="news-summary" data-tag="p" data-class="news-summary" data-desc="文章摘要，爬蟲可用來做摘要分析" data-scrape="文章摘要">OpenAI 官方確認下一代模型將於本季發布，推理能力和程式碼生成都有顯著提升...</p>
+                <div class="news-footer">
+                  <span class="news-author" data-tag="span" data-class="news-author" data-desc="作者名稱" data-scrape="作者">記者：陳小明</span>
+                  <span class="news-date" data-tag="span" data-class="news-date" data-desc="發布日期，爬蟲常用來排序或過濾文章" data-scrape="發布日期">2026-03-18</span>
+                  <span class="news-views" data-tag="span" data-class="news-views" data-desc="觀看次數，反映文章熱門程度" data-scrape="觀看次數">👁 24,503 次</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="news-item" data-tag="article" data-class="news-item" data-desc="&lt;article&gt; 語意標籤，代表一篇獨立的文章" data-scrape="新聞資料單位">
+              <div class="news-icon">💻</div>
+              <div class="news-content">
+                <span class="news-tag" data-tag="span" data-class="news-tag" data-desc="文章分類標籤" data-scrape="文章分類">硬體</span>
+                <h4 class="news-title" data-tag="h4" data-class="news-title" data-desc="文章標題" data-scrape="文章標題">Apple M4 Ultra 開箱評測：Mac Studio 桌機新王者登場</h4>
+                <p class="news-summary" data-tag="p" data-class="news-summary" data-desc="文章摘要" data-scrape="文章摘要">全新 M4 Ultra 晶片搭載 32 核心 CPU 與 80 核心 GPU，影片剪輯效能令人震驚...</p>
+                <div class="news-footer">
+                  <span class="news-author" data-tag="span" data-class="news-author" data-desc="作者名稱" data-scrape="作者">記者：林大偉</span>
+                  <span class="news-date" data-tag="span" data-class="news-date" data-desc="發布日期" data-scrape="發布日期">2026-03-16</span>
+                  <span class="news-views" data-tag="span" data-class="news-views" data-desc="觀看次數" data-scrape="觀看次數">👁 18,271 次</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="news-item" data-tag="article" data-class="news-item" data-desc="&lt;article&gt; 語意標籤，代表一篇獨立的文章" data-scrape="新聞資料單位">
+              <div class="news-icon">📊</div>
+              <div class="news-content">
+                <span class="news-tag" data-tag="span" data-class="news-tag" data-desc="文章分類標籤" data-scrape="文章分類">市場分析</span>
+                <h4 class="news-title" data-tag="h4" data-class="news-title" data-desc="文章標題" data-scrape="文章標題">台灣半導體出口額創歷史新高，Q1 成長 35%</h4>
+                <p class="news-summary" data-tag="p" data-class="news-summary" data-desc="文章摘要" data-scrape="文章摘要">經濟部統計，2026 年第一季半導體出口額達 3.8 兆台幣，年增幅創下十五年來最高紀錄...</p>
+                <div class="news-footer">
+                  <span class="news-author" data-tag="span" data-class="news-author" data-desc="作者名稱" data-scrape="作者">記者：王芷涵</span>
+                  <span class="news-date" data-tag="span" data-class="news-date" data-desc="發布日期" data-scrape="發布日期">2026-03-14</span>
+                  <span class="news-views" data-tag="span" data-class="news-views" data-desc="觀看次數" data-scrape="觀看次數">👁 9,844 次</span>
+                </div>
+              </div>
+            </article>
+
+          </div><!-- /news-list -->
+        </div><!-- /container -->
+
+        <footer class="site-footer" data-tag="footer" data-class="site-footer" data-desc="&lt;footer&gt; 語意標籤，頁面底部，通常含版權資訊" data-scrape="">
+          © 2026 Tech市集 ｜ 版權所有 ｜ 本為教學示範用途
+        </footer>
+
+      </div><!-- /demo-site -->
+    </div><!-- /demo-frame -->
+
+    <!-- Inspector -->
+    <div id="inspector">
+      <div class="inspector-header">
+        <h2>🔍 元素偵測器</h2>
+        <p>懸停左側元素 ｜ 藍框=一般元素 ｜ 黃框=爬蟲目標</p>
+      </div>
+      <div id="inspector-body">
+        <div class="insp-placeholder">
+          <span class="arrow">👈</span>
+          將滑鼠移到左側網頁的任何元素上<br><br>
+          <strong style="color:var(--accent)">藍色框</strong> = 一般 HTML 元素<br>
+          <strong style="color:var(--yellow)">黃色框</strong> = 常見爬蟲目標
+        </div>
+      </div>
+    </div>
+  </div><!-- /insp-layout -->
+
+</div><!-- /main-area -->
+
+<script>
+// ══════════════════════════════════════════
+// Mode switching
+// ══════════════════════════════════════════
+let currentMode = 'playground';
+let cssEnabled = true;
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach((b, i) => {
+    b.classList.toggle('active', ['playground','inspector'][i] === mode);
+  });
+  document.getElementById('pg-layout').classList.toggle('active', mode === 'playground');
+  document.getElementById('insp-layout').classList.toggle('active', mode === 'inspector');
+  document.getElementById('sub-tabs').style.display = mode === 'playground' ? 'flex' : 'none';
+  document.getElementById('bg-btns').style.display = mode === 'playground' ? 'flex' : 'none';
+
+  // Hide hover box when switching away from inspector
+  if (mode !== 'inspector') hoverBox.style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// CSS Toggle — works in both modes
+// ══════════════════════════════════════════
+function toggleCSS(enabled) {
+  cssEnabled = enabled;
+  const sheet = document.getElementById('demo-css');
+  sheet.disabled = !enabled;
+  const badge = document.getElementById('css-status-badge');
+  badge.textContent = enabled ? 'ON' : 'OFF';
+  badge.className = 'css-status ' + (enabled ? 'on' : 'off');
+  document.getElementById('demo-frame').classList.toggle('css-off-mode', !enabled);
+  // Also re-render playground preview to show with/without CSS effect
+  updateAll();
+}
+
+// ══════════════════════════════════════════
+// PLAYGROUND — state
+// ══════════════════════════════════════════
+let currentTab = 'html';
+
+const state = {
+  htmlTag:'h1', content:'你好，世界！', htmlColor:'#222222', htmlBg:'#ffffff',
+  fontSize:32, fontWeight:'700', fontFamily:'sans-serif', textAlign:'center',
+  italic:false, underline:false,
+  typoFontSize:16, typoLineHeight:1.6, typoLetterSpacing:0, typoColor:'#333333',
+  typoFontFamily:'sans-serif', typoFontWeight:'400', typoTextTransform:'none',
+  boxBg:'#6c8ef5', boxColor:'#ffffff', boxPaddingX:20, boxPaddingY:12,
+  boxMargin:0, boxBorderWidth:0, boxBorderColor:'#444466', boxBorderStyle:'solid',
+  boxRadius:8, boxShadow:8, boxWidth:200,
+  flexBg:'#1a2040', flexGap:12, flexDirection:'row', flexJustify:'center',
+  flexAlign:'center', flexWrap:false, flexItemCount:4, flexItemBg:'#6c8ef5',
+};
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.sub-tab').forEach((b,i) => {
+    b.classList.toggle('active', ['html','typography','box','layout'][i] === tab);
+  });
+  renderControls();
+  updateAll();
+}
+
+// ── Controls builder ──
+function renderControls() {
+  const panel = document.getElementById('controls');
+  if      (currentTab === 'html')       panel.innerHTML = buildHtmlControls();
+  else if (currentTab === 'typography') panel.innerHTML = buildTypoControls();
+  else if (currentTab === 'box')        panel.innerHTML = buildBoxControls();
+  else                                  panel.innerHTML = buildFlexControls();
+}
+
+function section(title, dot, body) {
+  return `<div class="ctrl-section">
+    <div class="ctrl-section-header"><span class="dot" style="background:${dot}"></span>${title}</div>
+    <div class="ctrl-body">${body}</div>
+  </div>`;
+}
+function slider(key, label, min, max, unit='', step=1) {
+  const v = state[key];
+  return `<div class="ctrl-row">
+    <label>${label} <span id="lbl-${key}">${v}${unit}</span></label>
+    <input type="range" min="${min}" max="${max}" step="${step}" value="${v}" data-key="${key}" data-unit="${unit}" oninput="setState('${key}',+this.value,'${unit}')">
+  </div>`;
+}
+function dropdown(key, label, options) {
+  const opts = options.map(([v,l]) => `<option value="${v}"${state[key]===v?' selected':''}>${l}</option>`).join('');
+  return `<div class="ctrl-row"><label>${label}</label><select data-key="${key}" onchange="setState('${key}',this.value)">${opts}</select></div>`;
+}
+function colorPicker(key, label) {
+  return `<div class="color-row"><label>${label}</label><input type="color" value="${state[key]}" data-key="${key}" oninput="setState('${key}',this.value)"></div>`;
+}
+function textInput(key, label) {
+  return `<div class="ctrl-row"><label>${label}</label><input type="text" value="${esc(state[key])}" data-key="${key}" oninput="setState('${key}',this.value)"></div>`;
+}
+function toggleBtn(key, label) {
+  return `<button class="toggle-btn ${state[key]?'on':''}" onclick="toggleState('${key}')">${label}</button>`;
+}
+function presets(list) {
+  const btns = list.map(([l,fn]) => `<button class="preset-btn" onclick="${fn}">${l}</button>`).join('');
+  return `<div class="ctrl-row"><label>快速範例</label><div class="preset-row">${btns}</div></div>`;
+}
+
+function buildHtmlControls() {
+  return section('HTML 元素', '#f07178', `
+    ${presets([['標題H1',"applyPreset('htmlH1')"],['按鈕',"applyPreset('htmlBtn')"],['卡片',"applyPreset('htmlCard')"],['標籤',"applyPreset('htmlBadge')"],['連結',"applyPreset('htmlLink')"]])}
+    ${dropdown('htmlTag','標籤類型',[['h1','<h1> 大標題'],['h2','<h2> 中標題'],['h3','<h3> 小標題'],['p','<p> 段落'],['button','<button> 按鈕'],['a','<a> 連結'],['span','<span> 行內'],['div','<div> 區塊']])}
+    ${textInput('content','內容文字')}
+    ${colorPicker('htmlColor','文字顏色')} ${colorPicker('htmlBg','背景顏色')}
+  `) + section('文字屬性', '#ffcb6b', `
+    ${slider('fontSize','字體大小',10,72,'px')}
+    ${dropdown('fontWeight','粗細',[['300','Light 300'],['400','Regular 400'],['600','SemiBold 600'],['700','Bold 700'],['900','Black 900']])}
+    ${dropdown('fontFamily','字體',[['sans-serif','Sans-serif'],['serif','Serif'],['monospace','Monospace'],['cursive','Cursive']])}
+    ${dropdown('textAlign','對齊',[['left','靠左'],['center','置中'],['right','靠右'],['justify','兩端']])}
+    <div class="ctrl-row"><label>修飾</label><div class="toggle-group">${toggleBtn('italic','斜體')}${toggleBtn('underline','底線')}</div></div>
+  `);
+}
+function buildTypoControls() {
+  return section('文字排版', '#c3e88d', `
+    ${presets([['內文',"applyPreset('typoBody')"],['標題',"applyPreset('typoHeading')"],['說明',"applyPreset('typoCaption')"],['程式碼',"applyPreset('typoCode')"]])}
+    ${slider('typoFontSize','字體大小',10,72,'px')}
+    ${slider('typoLineHeight','行高 line-height',1,3,'',.1)}
+    ${slider('typoLetterSpacing','字距 letter-spacing',-2,10,'px')}
+    ${dropdown('typoFontFamily','字體',[['sans-serif','Sans-serif'],['serif','Serif'],['monospace','Monospace'],['cursive','Cursive']])}
+    ${dropdown('typoFontWeight','粗細',[['300','300'],['400','400'],['500','500'],['600','600'],['700','700'],['900','900']])}
+    ${dropdown('typoTextTransform','大小寫',[['none','none'],['uppercase','UPPERCASE'],['lowercase','lowercase'],['capitalize','Capitalize']])}
+    ${colorPicker('typoColor','文字顏色')}
+  `);
+}
+function buildBoxControls() {
+  return section('盒子模型', '#82aaff', `
+    ${presets([['卡片',"applyPreset('boxCard')"],['按鈕',"applyPreset('boxButton')"],['標籤',"applyPreset('boxBadge')"],['輸入框',"applyPreset('boxInput')"]])}
+    ${colorPicker('boxBg','背景')} ${colorPicker('boxColor','文字')}
+    ${slider('boxWidth','寬度 width',50,400,'px')}
+    ${slider('boxPaddingX','左右 padding',0,60,'px')}
+    ${slider('boxPaddingY','上下 padding',0,60,'px')}
+    ${slider('boxMargin','外距 margin',0,60,'px')}
+    ${slider('boxRadius','圓角 radius',0,50,'px')}
+    ${slider('boxShadow','陰影 shadow',0,30,'px')}
+  `) + section('邊框', '#f07178', `
+    ${slider('boxBorderWidth','邊框寬度',0,8,'px')}
+    ${dropdown('boxBorderStyle','樣式',[['solid','solid'],['dashed','dashed'],['dotted','dotted'],['double','double']])}
+    ${colorPicker('boxBorderColor','邊框顏色')}
+  `);
+}
+function buildFlexControls() {
+  return section('Flexbox', '#c792ea', `
+    ${presets([['水平置中',"applyPreset('flexCenter')"],['均分',"applyPreset('flexSpaceBetween')"],['直排',"applyPreset('flexColumn')"],['換行',"applyPreset('flexWrap_')"]])}
+    ${dropdown('flexDirection','flex-direction',[['row','row'],['row-reverse','row-reverse'],['column','column'],['column-reverse','column-reverse']])}
+    ${dropdown('flexJustify','justify-content',[['flex-start','flex-start'],['center','center'],['flex-end','flex-end'],['space-between','space-between'],['space-around','space-around'],['space-evenly','space-evenly']])}
+    ${dropdown('flexAlign','align-items',[['flex-start','flex-start'],['center','center'],['flex-end','flex-end'],['stretch','stretch'],['baseline','baseline']])}
+    ${slider('flexGap','gap',0,40,'px')}
+    ${slider('flexItemCount','子元素數',1,8)}
+    <div class="ctrl-row"><label>換行</label><div class="toggle-group">${toggleBtn('flexWrap','flex-wrap: wrap')}</div></div>
+    ${colorPicker('flexBg','容器背景')} ${colorPicker('flexItemBg','子元素顏色')}
+  `);
+}
+
+// State management
+function setState(key, value, unit='') {
+  state[key] = value;
+  const lbl = document.getElementById(`lbl-${key}`);
+  if (lbl) lbl.textContent = value + unit;
+  updateAll();
+}
+function toggleState(key) {
+  state[key] = !state[key];
+  renderControls();
+  updateAll();
+}
+
+// Presets
+const PRESETS = {
+  htmlH1:   { htmlTag:'h1', content:'大標題 Heading', htmlColor:'#1a1a2e', htmlBg:'#ffffff', fontSize:40, fontWeight:'700', fontFamily:'serif', textAlign:'center', italic:false, underline:false },
+  htmlBtn:  { htmlTag:'button', content:'點擊我！', htmlColor:'#ffffff', htmlBg:'#6c8ef5', fontSize:16, fontWeight:'600', fontFamily:'sans-serif', textAlign:'center', italic:false, underline:false },
+  htmlCard: { htmlTag:'div', content:'這是一個卡片元素', htmlColor:'#333333', htmlBg:'#f5f7ff', fontSize:16, fontWeight:'400', fontFamily:'sans-serif', textAlign:'left', italic:false, underline:false },
+  htmlBadge:{ htmlTag:'span', content:'NEW', htmlColor:'#ffffff', htmlBg:'#f06292', fontSize:11, fontWeight:'700', fontFamily:'sans-serif', textAlign:'center', italic:false, underline:false },
+  htmlLink: { htmlTag:'a', content:'點這裡了解更多 →', htmlColor:'#6c8ef5', htmlBg:'#ffffff', fontSize:16, fontWeight:'400', fontFamily:'sans-serif', textAlign:'left', italic:false, underline:true },
+  typoBody:    { typoFontSize:16, typoLineHeight:1.6, typoLetterSpacing:0, typoColor:'#333333', typoFontFamily:'sans-serif', typoFontWeight:'400', typoTextTransform:'none' },
+  typoHeading: { typoFontSize:36, typoLineHeight:1.2, typoLetterSpacing:-1, typoColor:'#1a1a2e', typoFontFamily:'serif', typoFontWeight:'700', typoTextTransform:'none' },
+  typoCaption: { typoFontSize:12, typoLineHeight:1.4, typoLetterSpacing:.5, typoColor:'#888888', typoFontFamily:'sans-serif', typoFontWeight:'400', typoTextTransform:'uppercase' },
+  typoCode:    { typoFontSize:14, typoLineHeight:1.7, typoLetterSpacing:.3, typoColor:'#c3e88d', typoFontFamily:'monospace', typoFontWeight:'400', typoTextTransform:'none' },
+  boxCard:   { boxBg:'#ffffff', boxColor:'#333333', boxPaddingX:24, boxPaddingY:20, boxMargin:0, boxBorderWidth:0, boxBorderColor:'#e0e0e0', boxBorderStyle:'solid', boxRadius:12, boxShadow:16, boxWidth:240 },
+  boxButton: { boxBg:'#6c8ef5', boxColor:'#ffffff', boxPaddingX:20, boxPaddingY:10, boxMargin:0, boxBorderWidth:0, boxBorderColor:'#5577dd', boxBorderStyle:'solid', boxRadius:8, boxShadow:4, boxWidth:140 },
+  boxBadge:  { boxBg:'#f06292', boxColor:'#ffffff', boxPaddingX:10, boxPaddingY:4, boxMargin:0, boxBorderWidth:0, boxBorderColor:'#f06292', boxBorderStyle:'solid', boxRadius:20, boxShadow:0, boxWidth:80 },
+  boxInput:  { boxBg:'#fafafa', boxColor:'#333333', boxPaddingX:12, boxPaddingY:8, boxMargin:0, boxBorderWidth:1, boxBorderColor:'#dddddd', boxBorderStyle:'solid', boxRadius:6, boxShadow:0, boxWidth:200 },
+  flexCenter:       { flexDirection:'row', flexJustify:'center', flexAlign:'center', flexGap:12, flexWrap:false, flexItemCount:3, flexItemBg:'#6c8ef5', flexBg:'#eef0ff' },
+  flexSpaceBetween: { flexDirection:'row', flexJustify:'space-between', flexAlign:'center', flexGap:12, flexWrap:false, flexItemCount:4, flexItemBg:'#f06292', flexBg:'#fff0f5' },
+  flexColumn:       { flexDirection:'column', flexJustify:'flex-start', flexAlign:'center', flexGap:8, flexWrap:false, flexItemCount:4, flexItemBg:'#4caf87', flexBg:'#f0fff7' },
+  flexWrap_:        { flexDirection:'row', flexJustify:'flex-start', flexAlign:'center', flexGap:8, flexWrap:true, flexItemCount:7, flexItemBg:'#f5c842', flexBg:'#fffbf0' },
+};
+function applyPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  Object.assign(state, p);
+  renderControls();
+  updateAll();
+}
+
+// Renderers
+function updateAll() {
+  if (currentTab === 'html')       renderHtml();
+  else if (currentTab === 'typography') renderTypo();
+  else if (currentTab === 'box')   renderBox();
+  else                             renderFlex();
+  updatePrompt();
+}
+
+function renderHtml() {
+  const { htmlTag, content, htmlColor, htmlBg, fontSize, fontWeight, fontFamily, textAlign, italic, underline } = state;
+  const stage = document.getElementById('preview-stage');
+
+  // Remove old banner
+  stage.querySelectorAll('.css-off-banner').forEach(b => b.remove());
+
+  if (cssEnabled) {
+    const styleStr = [
+      `color:${htmlColor}`, `background:${htmlBg}`,
+      `font-size:${fontSize}px`, `font-weight:${fontWeight}`,
+      `font-family:${fontFamily}`, `text-align:${textAlign}`,
+      `padding:12px 20px`, `border-radius:8px`, `display:inline-block`,
+      ...(italic?['font-style:italic']:[]),
+      ...(underline?['text-decoration:underline']:[]),
+    ].join(';');
+    const el = document.createElement(htmlTag);
+    el.style.cssText = styleStr;
+    el.textContent = content;
+    if (htmlTag === 'a') el.href = '#';
+    stage.innerHTML = '';
+    stage.appendChild(el);
+    const cls = htmlTag==='h1'||htmlTag==='h2'||htmlTag==='h3'?'heading':htmlTag==='button'?'btn':'element';
+    const cssSrc = `.${cls} {\n  color: ${htmlColor};\n  background: ${htmlBg};\n  font-size: ${fontSize}px;\n  font-weight: ${fontWeight};\n  font-family: ${fontFamily};\n  text-align: ${textAlign};\n  padding: 12px 20px;\n  border-radius: 8px;\n  display: inline-block;${italic?'\n  font-style: italic;':''}${underline?'\n  text-decoration: underline;':''}\n}`;
+    document.getElementById('html-code').innerHTML = syntaxHtml(`<${htmlTag} class="${cls}">\n  ${esc(content)}\n</${htmlTag}>`);
+    document.getElementById('css-code').innerHTML = syntaxCss(cssSrc);
+  } else {
+    // No CSS — show raw element
+    const el = document.createElement(htmlTag);
+    el.textContent = content;
+    if (htmlTag === 'a') el.href = '#';
+    stage.innerHTML = '';
+    stage.appendChild(el);
+    const banner = document.createElement('div');
+    banner.className = 'css-off-banner';
+    banner.textContent = '⚠️ CSS 已關閉 — 純 HTML 預設樣式';
+    stage.appendChild(banner);
+    document.getElementById('html-code').innerHTML = syntaxHtml(`<${htmlTag}>\n  ${esc(content)}\n</${htmlTag}>`);
+    document.getElementById('css-code').innerHTML = `<span style="color:var(--text-dim);font-style:italic">/* CSS 已關閉，元素使用瀏覽器預設樣式 */\n/* 開啟 CSS 後，才會套用這些樣式 */</span>`;
+  }
+}
+
+function renderTypo() {
+  const { typoFontSize, typoLineHeight, typoLetterSpacing, typoColor, typoFontFamily, typoFontWeight, typoTextTransform } = state;
+  const stage = document.getElementById('preview-stage');
+  const sample = '網頁設計是結合藝術與技術的學科。\n好的排版讓閱讀更舒適、更有層次感。\nTypography matters in web design.';
+  if (cssEnabled) {
+    stage.innerHTML = `<p style="font-size:${typoFontSize}px;line-height:${typoLineHeight};letter-spacing:${typoLetterSpacing}px;color:${typoColor};font-family:${typoFontFamily};font-weight:${typoFontWeight};text-transform:${typoTextTransform};max-width:500px;white-space:pre-line;">${sample}</p>`;
+    document.getElementById('css-code').innerHTML = syntaxCss(`.text {\n  font-size: ${typoFontSize}px;\n  line-height: ${typoLineHeight};\n  letter-spacing: ${typoLetterSpacing}px;\n  color: ${typoColor};\n  font-family: ${typoFontFamily};\n  font-weight: ${typoFontWeight};${typoTextTransform!=='none'?`\n  text-transform: ${typoTextTransform};`:''}\n}`);
+  } else {
+    stage.innerHTML = `<p style="max-width:500px;white-space:pre-line;">${sample}</p>`;
+    document.getElementById('css-code').innerHTML = `<span style="color:var(--text-dim);font-style:italic">/* CSS 已關閉 — 使用瀏覽器預設字體樣式 */</span>`;
+  }
+  document.getElementById('html-code').innerHTML = syntaxHtml(`<p class="text">\n  ${esc(sample.split('\n')[0])}\n</p>`);
+}
+
+function renderBox() {
+  const { boxBg, boxColor, boxPaddingX, boxPaddingY, boxMargin, boxBorderWidth, boxBorderColor, boxBorderStyle, boxRadius, boxShadow, boxWidth } = state;
+  const stage = document.getElementById('preview-stage');
+  const shadow = boxShadow > 0 ? `0 ${Math.round(boxShadow/2)}px ${boxShadow}px rgba(0,0,0,0.15)` : 'none';
+  const border = boxBorderWidth > 0 ? `${boxBorderWidth}px ${boxBorderStyle} ${boxBorderColor}` : 'none';
+  if (cssEnabled) {
+    stage.innerHTML = `<div style="background:${boxBg};color:${boxColor};padding:${boxPaddingY}px ${boxPaddingX}px;margin:${boxMargin}px;border-radius:${boxRadius}px;box-shadow:${shadow};border:${border};width:${boxWidth}px;font-family:sans-serif;font-size:14px;text-align:center;">
+      <div style="font-size:10px;opacity:.6;margin-bottom:3px;">padding: ${boxPaddingY}px ${boxPaddingX}px</div>
+      <div style="font-weight:700;">Box Model</div>
+      <div style="font-size:10px;opacity:.6;margin-top:3px;">width: ${boxWidth}px</div>
+    </div>`;
+    document.getElementById('css-code').innerHTML = syntaxCss(`.box {\n  background: ${boxBg};\n  color: ${boxColor};\n  width: ${boxWidth}px;\n  padding: ${boxPaddingY}px ${boxPaddingX}px;${boxMargin>0?`\n  margin: ${boxMargin}px;`:''}\n  border-radius: ${boxRadius}px;${boxBorderWidth>0?`\n  border: ${border};`:''}\n  box-shadow: ${shadow};\n}`);
+  } else {
+    stage.innerHTML = `<div style="width:${boxWidth}px;font-family:sans-serif;font-size:14px;text-align:center;">Box Model<br><span style="font-size:11px;color:#666;">無 CSS 樣式</span></div>`;
+    document.getElementById('css-code').innerHTML = `<span style="color:var(--text-dim);font-style:italic">/* CSS 已關閉 — 區塊無背景、無間距、無圓角 */</span>`;
+  }
+  document.getElementById('html-code').innerHTML = syntaxHtml(`<div class="box">\n  Box Model\n</div>`);
+}
+
+function renderFlex() {
+  const { flexBg, flexGap, flexDirection, flexJustify, flexAlign, flexWrap, flexItemCount, flexItemBg } = state;
+  const stage = document.getElementById('preview-stage');
+  const items = Array.from({length:flexItemCount}, (_,i) =>
+    `<div style="background:${cssEnabled?flexItemBg:'#999'};color:#fff;border-radius:${cssEnabled?'6px':'0'};padding:10px 13px;font-size:13px;font-weight:600;min-width:40px;text-align:center;">${i+1}</div>`
+  ).join('');
+  if (cssEnabled) {
+    stage.innerHTML = `<div style="display:flex;flex-direction:${flexDirection};justify-content:${flexJustify};align-items:${flexAlign};flex-wrap:${flexWrap?'wrap':'nowrap'};gap:${flexGap}px;background:${flexBg};padding:18px;border-radius:10px;width:100%;min-height:110px;">${items}</div>`;
+    document.getElementById('css-code').innerHTML = syntaxCss(`.container {\n  display: flex;\n  flex-direction: ${flexDirection};\n  justify-content: ${flexJustify};\n  align-items: ${flexAlign};${flexWrap?'\n  flex-wrap: wrap;':''}\n  gap: ${flexGap}px;\n}`);
+  } else {
+    stage.innerHTML = `<div style="width:100%;min-height:80px;">${items}</div>`;
+    document.getElementById('css-code').innerHTML = `<span style="color:var(--text-dim);font-style:italic">/* CSS 已關閉 — 子元素以區塊方式堆疊，無 flex 排版 */</span>`;
+  }
+  document.getElementById('html-code').innerHTML = syntaxHtml(`<div class="container">\n  <div class="item">1</div>\n  <div class="item">2</div>\n  <div class="item">3</div>\n</div>`);
+}
+
+function updatePrompt() {
+  const t = document.getElementById('prompt-text');
+  const cssNote = cssEnabled ? '' : '【CSS 已關閉 — 以上為純 HTML 預設效果】 ';
+  if (currentTab === 'html') {
+    const { htmlTag, content, fontSize, fontWeight } = state;
+    t.textContent = `${cssNote}建立 <${htmlTag}>「${content}」，字體 ${fontSize}px，粗細 ${fontWeight}。`;
+  } else if (currentTab === 'typography') {
+    const { typoFontSize, typoLineHeight, typoLetterSpacing } = state;
+    t.textContent = `${cssNote}font-size: ${typoFontSize}px、line-height: ${typoLineHeight}、letter-spacing: ${typoLetterSpacing}px。`;
+  } else if (currentTab === 'box') {
+    const { boxRadius, boxShadow, boxPaddingX, boxPaddingY } = state;
+    t.textContent = `${cssNote}padding: ${boxPaddingY}px ${boxPaddingX}px，border-radius: ${boxRadius}px${boxShadow>0?`，box-shadow blur: ${boxShadow}px`:''}。`;
+  } else {
+    const { flexDirection, flexJustify, flexAlign } = state;
+    t.textContent = `${cssNote}display: flex、flex-direction: ${flexDirection}、justify-content: ${flexJustify}、align-items: ${flexAlign}。`;
+  }
+}
+
+function setBg(mode) {
+  document.getElementById('preview-stage').className =
+    mode === 'dark' ? 'dark-bg' : mode === 'pattern' ? 'pattern-bg' : '';
+}
+
+function copyCode() {
+  const html = document.getElementById('html-code').textContent;
+  const css  = document.getElementById('css-code').textContent;
+  navigator.clipboard.writeText(`<!-- HTML -->\n${html}\n\n/* CSS */\n${css}`).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '已複製！'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '複製程式碼'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// ══════════════════════════════════════════
+// INSPECTOR
+// ══════════════════════════════════════════
+const hoverBox  = document.getElementById('hover-box');
+const inspBody  = document.getElementById('inspector-body');
+let   currentEl = null;
+
+document.getElementById('demo-site').addEventListener('mouseover', function(e) {
+  if (currentMode !== 'inspector') return;
+  const el = e.target.closest('[data-tag]');
+  if (!el || el === currentEl) return;
+  currentEl = el;
+  const isScrape = !!(el.dataset.scrape);
+  updateHighlight(el, isScrape);
+  updateInspector(el, isScrape);
+  e.stopPropagation();
+});
+document.getElementById('demo-site').addEventListener('mouseleave', function() {
+  hoverBox.style.display = 'none';
+  currentEl = null;
+});
+
+function updateHighlight(el, isScrape) {
+  const r = el.getBoundingClientRect();
+  hoverBox.style.cssText = `display:block;top:${r.top}px;left:${r.left}px;width:${r.width}px;height:${r.height}px;`;
+  hoverBox.className = 'hover-highlight' + (isScrape ? ' scrape-target' : '');
+}
+
+function updateInspector(el, isScrape) {
+  const tag    = el.dataset.tag || el.tagName.toLowerCase();
+  const cls    = el.dataset.class || '';
+  const desc   = el.dataset.desc || '';
+  const scrape = el.dataset.scrape || '';
+  const id     = el.id || '';
+  const text   = el.textContent.trim().slice(0,70) + (el.textContent.trim().length > 70 ? '…' : '');
+  let selector = tag + (id ? `#${id}` : cls ? '.'+cls.split(' ')[0] : '');
+
+  let tagStr = `&lt;<span class="hl-tag">${tag}</span>`;
+  if (id)  tagStr += ` <span class="hl-attr">id</span>=<span class="hl-val">"${esc(id)}"</span>`;
+  if (cls) tagStr += ` <span class="hl-attr">class</span>=<span class="hl-val">"${esc(cls)}"</span>`;
+  tagStr += `&gt;`;
+
+  inspBody.innerHTML = `
+    <div class="insp-card">
+      <div class="insp-card-header">元素標籤</div>
+      <div class="insp-card-body">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+          <span class="tag-badge">&lt;${tag}&gt;</span>
+          ${isScrape ? `<span class="scrape-badge">⭐ ${scrape}</span>` : ''}
+        </div>
+        <div class="insp-row">
+          <span class="insp-label">說明</span>
+          <span class="insp-value" style="white-space:normal;line-height:1.5;">${desc}</span>
+        </div>
+      </div>
+    </div>
+    <div class="insp-card">
+      <div class="insp-card-header"><span style="background:#e44d26;color:#fff;padding:1px 5px;border-radius:3px;font-size:9px;">HTML</span>&nbsp;程式碼</div>
+      <div class="insp-card-body">
+        <div class="code-block">${tagStr}
+  ${esc(text || '（無文字內容）')}
+&lt;/<span class="hl-tag">${tag}</span>&gt;</div>
+      </div>
+    </div>
+    <div class="insp-card">
+      <div class="insp-card-header"><span style="background:#264de4;color:#fff;padding:1px 5px;border-radius:3px;font-size:9px;">CSS</span>&nbsp;選取器</div>
+      <div class="insp-card-body">
+        <div class="insp-row"><span class="insp-label">選取器</span><div class="selector-path">${esc(selector)}</div></div>
+        ${cls ? `<div class="insp-row"><span class="insp-label">class</span><span class="insp-value green">${esc(cls)}</span></div>` : ''}
+        ${id  ? `<div class="insp-row"><span class="insp-label">id</span><span class="insp-value yellow">${esc(id)}</span></div>` : ''}
+      </div>
+    </div>
+    ${isScrape
+      ? `<div class="scrape-tip"><p>⭐ <strong>爬蟲重點：</strong>此元素含 <strong>${scrape}</strong>。<br>Python 抓取範例：<code>soup.select("${esc(selector)}")</code></p></div>`
+      : `<div style="background:rgba(108,142,245,.07);border:1px solid rgba(108,142,245,.2);border-radius:6px;padding:7px 9px;"><p style="font-size:10px;color:var(--text-dim);line-height:1.6;"><strong style="color:var(--accent)">&lt;${tag}&gt;</strong> 是結構性標籤，通常用於排版或容器。</p></div>`
+    }
+  `;
+}
+
+// ══════════════════════════════════════════
+// Shared helpers
+// ══════════════════════════════════════════
+function syntaxHtml(code) {
+  return esc(code)
+    .replace(/&lt;(\/?[\w]+)/g, '&lt;<span class="hl-tag">$1</span>')
+    .replace(/(\w[\w-]*)=&quot;/g, '<span class="hl-attr">$1</span>=&quot;')
+    .replace(/&quot;([^&]*)&quot;/g, '&quot;<span class="hl-val">$1</span>&quot;');
+}
+function syntaxCss(code) {
+  return esc(code)
+    .replace(/^(\.[^\s{]+)/gm, '<span class="hl-sel">$1</span>')
+    .replace(/([\w-]+):/g, '<span class="hl-prop">$1</span>:')
+    .replace(/:\s*([^;\n}]+)/g, ': <span class="hl-pval">$1</span>');
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init
+renderControls();
+updateAll();
+</script>
+</body>
+</html>

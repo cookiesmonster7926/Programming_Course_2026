@@ -3,59 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Programming Course 2026 - Demo Portal</title>
+    <title>程式設計實習 2026 - 課程入口</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background: #f4f4f5; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            padding: 20px;
-            box-sizing: border-box;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #0f1117;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #e8eaf6;
         }
-        .card { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 20px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.05); 
-            text-align: center; 
-            max-width: 500px;
-            width: 100%;
+        .container { max-width: 680px; margin: 0 auto; }
+        .site-header { text-align: center; margin-bottom: 40px; }
+        .site-header h1 { font-size: 1.8rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+        .site-header h1 span { color: #6c8ef5; }
+        .site-header p { font-size: 13px; color: #8b92b8; }
+
+        .week-section { margin-bottom: 28px; }
+        .week-label {
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: #8b92b8;
+            margin-bottom: 10px; padding-left: 2px;
         }
-        h1 { margin-top: 0; color: #18181b; font-size: 2rem; margin-bottom: 8px; }
-        p { color: #52525b; line-height: 1.6; margin-bottom: 32px; }
-        .btn { 
-            display: flex; 
-            align-items: center;
-            justify-content: center;
-            padding: 16px 24px; 
-            background: #cd2834; 
-            color: white; 
-            text-decoration: none; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            font-size: 1.1rem;
-            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); 
-            box-shadow: 0 4px 15px rgba(205, 40, 52, 0.3);
+
+        .card {
+            background: #1a1d27; border: 1px solid #2e3250;
+            border-radius: 14px; padding: 20px 22px;
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 16px;
         }
-        .btn:hover { 
-            background: #e11d48; 
-            transform: translateY(-3px); 
-            box-shadow: 0 8px 25px rgba(205, 40, 52, 0.4);
+        .card-icon { font-size: 28px; flex-shrink: 0; }
+        .card-body { flex: 1; min-width: 0; }
+        .card-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+        .card-desc { font-size: 12px; color: #8b92b8; line-height: 1.5; }
+        .card-tags { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+        .tag {
+            padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
+            background: #22263a; color: #6c8ef5; border: 1px solid #2e3250;
         }
-        .btn:active {
-            transform: translateY(0);
+        .tag.green { color: #4caf87; }
+        .tag.pink { color: #f06292; }
+        .card-btn {
+            padding: 8px 16px; border-radius: 8px; border: none;
+            background: #6c8ef5; color: #fff;
+            font-size: 12px; font-weight: 700; cursor: pointer;
+            text-decoration: none; white-space: nowrap;
+            transition: all .15s; flex-shrink: 0;
         }
+        .card-btn:hover { background: #8aa8ff; transform: translateY(-1px); }
+        .card-btn.outline {
+            background: transparent; border: 1px solid #2e3250; color: #8b92b8;
+        }
+        .card-btn.outline:hover { border-color: #6c8ef5; color: #6c8ef5; background: rgba(108,142,245,.08); }
+
+        .footer { text-align: center; margin-top: 40px; font-size: 11px; color: #3d4270; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h1>程式設計實習 2026</h1>
-        <p>歡迎來到課程示範平台！點擊下方按鈕進入我們本週的 Web API 魔法畫廊與寶可夢世界地圖專案。</p>
-        <a href="https://verdant-donut-2506a8.netlify.app/" target="_blank" class="btn">🚀 進入 Week 04: API 視覺化畫廊</a>
+<div class="container">
+
+    <div class="site-header">
+        <h1>程式設計實習 <span>2026</span></h1>
+        <p>課程示範與教學工具入口 — 逢甲大學</p>
     </div>
+
+    <!-- Week 04 -->
+    <div class="week-section">
+        <div class="week-label">Week 04 · 0319 · HTML & CSS + Web API</div>
+
+        <div class="card">
+            <div class="card-icon">🎨</div>
+            <div class="card-body">
+                <div class="card-title">HTML & CSS 互動教學平台</div>
+                <div class="card-desc">即時調整 CSS 屬性、CSS on/off 比較、懸停偵測網頁元素與爬蟲目標</div>
+                <div class="card-tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                    <span class="tag green">Flexbox</span>
+                    <span class="tag pink">爬蟲預備</span>
+                </div>
+            </div>
+            <a href="Week04_0319_demo/html_css_teaching.html" class="card-btn">開啟 →</a>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🚀</div>
+            <div class="card-body">
+                <div class="card-title">Week 04: API 視覺化畫廊</div>
+                <div class="card-desc">Web API 魔法畫廊與寶可夢世界地圖專案</div>
+                <div class="card-tags">
+                    <span class="tag">API</span>
+                    <span class="tag green">JavaScript</span>
+                </div>
+            </div>
+            <a href="https://verdant-donut-2506a8.netlify.app/" target="_blank" class="card-btn">開啟 →</a>
+        </div>
+    </div>
+
+    <div class="footer">程式設計實習 2026 · 僅供課堂教學使用</div>
+</div>
 </body>
 </html>
