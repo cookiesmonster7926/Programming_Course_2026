@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}API Visualization Gallery{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Data is Beautiful.</h1>
+    <p>Experience the transformation of raw JSON into elegant digital interfaces. Select an API below to witness the magic.</p>
+</section>
+
+<style>
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.bento-card {
+    background-color: var(--bg-secondary);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    text-decoration: none;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.bento-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--accent-color);
+}
+
+.bento-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gradient-accent);
+    color: white;
+    margin-bottom: var(--spacing-md);
+}
+
+.bento-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.bento-card p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+</style>
+
+<div class="bento-grid">
+    <a href="jsonplaceholder.html" class="bento-card">
+        <div>
+            <div class="bento-icon"><i data-feather="file-text"></i></div>
+            <h3>JSONPlaceholder</h3>
+            <p>Minimalist Reading Experience</p>
+        </div>
+    </a>
+    
+    <a href="github.html" class="bento-card">
+        <div>
+            <div class="bento-icon" style="background: linear-gradient(135deg, #24292e, #040d21);"><i data-feather="github"></i></div>
+            <h3>GitHub REST API</h3>
+            <p>Developer Honors Card</p>
+        </div>
+    </a>
+
+    <a href="worldbank.html" class="bento-card">
+        <div>
+            <div class="bento-icon" style="background: linear-gradient(135deg, #333333, #000000);"><i data-feather="globe"></i></div>
+            <h3>World Bank</h3>
+            <p>Macro-Data Poster</p>
+        </div>
+    </a>
+
+    <a href="openmeteo.html" class="bento-card">
+        <div>
+            <div class="bento-icon" style="background: linear-gradient(135deg, #0ba360, #3cba92);"><i data-feather="cloud"></i></div>
+            <h3>Open-Meteo</h3>
+            <p>Glassmorphic Weather Widget</p>
+        </div>
+    </a>
+
+    <a href="restcountries.html" class="bento-card">
+        <div>
+            <div class="bento-icon" style="background: linear-gradient(135deg, #e1eec3, #f05053);"><i data-feather="map-pin"></i></div>
+            <h3>REST Countries</h3>
+            <p>NatGeo Style Country Card</p>
+        </div>
+    </a>
+
+    <a href="pokeapi.html" class="bento-card">
+        <div>
+            <div class="bento-icon" style="background: linear-gradient(135deg, #fceabb, #f8b500);"><i data-feather="cpu"></i></div>
+            <h3>PokeAPI</h3>
+            <p>Holographic Pokedex Edition</p>
+        </div>
+    </a>
+
+    <a href="dogcat.html" class="bento-card">
+        <div>
+            <div class="bento-icon" style="background: linear-gradient(135deg, #ff9a9e, #fecfef);"><i data-feather="camera"></i></div>
+            <h3>The Dog/Cat API</h3>
+            <p>Modern Art Polaroid</p>
+        </div>
+    </a>
+
+    <a href="randomuser.html" class="bento-card">
+        <div>
+            <div class="bento-icon" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb);"><i data-feather="user"></i></div>
+            <h3>RandomUser API</h3>
+            <p>Corporate Digital ID</p>
+        </div>
+    </a>
+</div>
+{% endblock %}

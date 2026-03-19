@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}API Visualization Gallery{% endblock %}</title>
+    <!-- Modern Sans-Serif Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+    <!-- Feather Icons for Beautiful SVG Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="container">
+        <a href="index.html" class="logo">
+            <i data-feather="layers" style="margin-right: 8px; vertical-align: bottom;"></i>
+            DataGallery.
+        </a>
+    </header>
+
+    <main class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="container" style="text-align: center; padding: var(--spacing-lg) 0; color: var(--text-muted); font-size: 0.9rem;">
+        <p>Built for the 2026 Programming Course Demo. Generated dynamically with Python & Jinja2.</p>
+    </footer>
+
+    <script>
+        feather.replace();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

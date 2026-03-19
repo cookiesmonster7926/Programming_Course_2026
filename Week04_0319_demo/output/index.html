@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Data Canvas - Functional Forms</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+<style>
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+}
+.hero {
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
+    position: relative;
+    overflow: hidden;
+}
+.hero::after {
+    content: '';
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(0, 113, 227, 0.15) 0%, transparent 60%);
+    top: -200px;
+    right: -200px;
+    z-index: 1;
+}
+.hero h1 {
+    font-size: clamp(3.5rem, 6vw, 6rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    z-index: 2;
+    background: linear-gradient(180deg, #fff 0%, #888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 24px;
+}
+.hero p {
+    font-size: 1.3rem;
+    color: #a1a1a6;
+    max-width: 650px;
+    z-index: 2;
+    font-weight: 300;
+    line-height: 1.6;
+}
+
+.gallery-section {
+    padding: 80px 4vw 120px;
+    background: #000;
+    display: flex;
+    justify-content: center;
+}
+
+/* Perfect 4x3 Grid */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 280px;
+    gap: 24px;
+    max-width: 1400px;
+    width: 100%;
+}
+
+@media (max-width: 1100px) {
+    .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 250px;
+    }
+}
+@media (max-width: 700px) {
+    .bento-grid {
+        grid-template-columns: 1fr;
+    }
+    .bento-item {
+        grid-column: span 1 !important;
+    }
+}
+
+.bento-item {
+    background: #111;
+    border-radius: 24px;
+    padding: 32px;
+    text-decoration: none;
+    color: #fff;
+    border: 1px solid #222;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.bento-item:hover {
+    transform: translateY(-6px);
+    border-color: #444;
+    background: #151515;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+}
+
+.bento-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #222;
+    margin-bottom: 24px;
+    z-index: 2;
+}
+
+.bento-item h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    z-index: 2;
+}
+.bento-item p {
+    font-size: 1rem;
+    color: #888;
+    z-index: 2;
+    line-height: 1.5;
+}
+
+/* Specific Card Styling */
+.card-github {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #0d1117, #161b22);
+}
+.card-restcountries {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #1d2122, #000000);
+}
+.card-dogcat {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #efebe6, #d9d3cb);
+    color: #111;
+}
+.card-randomuser {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+}
+.card-weather {
+    background: linear-gradient(135deg, #0ba360, #3cba92);
+}
+</style>
+
+</head>
+<body>
+    
+    
+<div class="hero">
+    <h1>Data,<br>Functionalized.</h1>
+    <p>We've upgraded from static views. Explore 8 real-world, highly interactive web applications powered by live API data.</p>
+    
+    <a href="pokemap.html" style="margin-top: 32px; padding: 16px 32px; background: linear-gradient(135deg, #0ba360, #3cba92); color: white; border-radius: 40px; text-decoration: none; font-weight: 700; font-size: 1.1rem; box-shadow: 0 10px 30px rgba(11, 163, 96, 0.4); display: flex; align-items: center; gap: 12px; transition: transform 0.2s;">
+        <i data-feather="globe"></i> View Capstone Demo: Pok&eacute;World OS
+    </a>
+</div>
+
+<div class="gallery-section">
+    <!-- Perfect 4-Column Grid -->
+    <div class="bento-grid">
+        
+        <!-- ROW 1 (1 + 2 + 1 = 4 cols) -->
+        <a href="jsonplaceholder.html" class="bento-item">
+            <div class="bento-icon"><i data-feather="message-circle"></i></div>
+            <div>
+                <h3>Threaded Readers</h3>
+                <p>JSONPlaceholder Posts API</p>
+            </div>
+        </a>
+        
+        <a href="github.html" class="bento-item card-github">
+            <div class="bento-icon" style="background:#238636"><i data-feather="github"></i></div>
+            <div>
+                <h3 style="font-size:2.2rem">Repo Dashboard</h3>
+                <p>GitHub API with Interactive Activity</p>
+            </div>
+        </a>
+        
+        <a href="worldbank.html" class="bento-item">
+            <div class="bento-icon" style="color:#58a6ff"><i data-feather="trending-up"></i></div>
+            <div>
+                <h3>Macro Trends</h3>
+                <p>World Bank powered Chart.js graphs</p>
+            </div>
+        </a>
+
+        <!-- ROW 2 (1 + 2 + 1 = 4 cols) -->
+        <a href="openmeteo.html" class="bento-item card-weather">
+            <div class="bento-icon" style="background:rgba(255,255,255,0.2); color:#fff;"><i data-feather="cloud-rain"></i></div>
+            <div>
+                <h3 style="color:#fff">Weather App</h3>
+                <p style="color:rgba(255,255,255,0.9)">Open-Meteo Current & Hourly Forecast</p>
+            </div>
+        </a>
+
+        <a href="restcountries.html" class="bento-item card-restcountries">
+            <div class="bento-icon" style="background: #ffcc00; color: #000;"><i data-feather="map"></i></div>
+            <div>
+                <h3 style="font-size:2.2rem">Interactive Atlas</h3>
+                <p>REST Countries integrated with Leaflet maps</p>
+            </div>
+        </a>
+
+        <a href="pokeapi.html" class="bento-item">
+            <div class="bento-icon" style="color:#f8b500; background:#332700"><i data-feather="cpu"></i></div>
+            <div>
+                <h3>Pokedex OS</h3>
+                <p>PokeAPI with Audio Cries & Shiny Toggle</p>
+            </div>
+        </a>
+
+        <!-- ROW 3 (2 + 2 = 4 cols) -->
+        <a href="dogcat.html" class="bento-item card-dogcat">
+            <div class="bento-icon" style="color:#ff9a9e; background:#fff;"><i data-feather="heart"></i></div>
+            <div>
+                <h3 style="font-size:2.2rem; color:#111;">Pinterest Gallery</h3>
+                <p style="color:#555;">The Cat API Masonry grid with interactive Likes</p>
+            </div>
+        </a>
+
+        <a href="randomuser.html" class="bento-item card-randomuser">
+            <div class="bento-icon" style="color:#a18cd1; background:#292238;"><i data-feather="users"></i></div>
+            <div>
+                <h3 style="font-size:2.2rem">Corporate Directory</h3>
+                <p>RandomUser API with real-time Employee Search filtering</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+
+    
+
+    <script>
+        feather.replace();
+    </script>
+    
+</body>
+</html>

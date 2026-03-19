@@ -22,7 +22,7 @@ Click the folder links in the table below to access the specific code and detail
 | Week | Directory / Link | Topic & Learning Objectives |
 | :--- | :--- | :--- |
 | **Week 02** | [📂 Week02_0306_demo](./Week02_0306_demo/) | Environment setup, basic `uv` usage, Speed Typing Challenge GUI |
-| **Week 03** | 🚧 *Coming next Sunday* | - |
+| **Week 03** | [📂 Week03_0313_demo](./Week03_0313_demo/) | - |
 | **Week 04** | 🚧 *Coming later* | - |
 
 *(This table will be continuously updated by the TA...)*

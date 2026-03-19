@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RandomUser API Demo - API Gallery</title>
+    <!-- Modern Sans-Serif Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+    <!-- Feather Icons for Beautiful SVG Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+<style>
+.id-badge {
+    background: #fff;
+    width: 300px;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    margin: 0 auto;
+    position: relative;
+    border: 1px solid #e5e7eb;
+}
+
+.id-header {
+    background: var(--gradient-accent);
+    height: 120px;
+    position: relative;
+}
+
+/* Lanyard hole */
+.lanyard-hole {
+    width: 40px;
+    height: 10px;
+    background: #fff;
+    border-radius: 10px;
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.avatar-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: -60px auto 0 auto;
+    background: #fff;
+    padding: 4px;
+    position: relative;
+    z-index: 2;
+}
+
+.avatar-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.id-body {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+    text-align: center;
+}
+
+.id-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.id-role {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+}
+
+.id-location {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.id-footer {
+    background: #f9fafb;
+    padding: var(--spacing-md);
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: center;
+}
+
+/* Fake Barcode */
+.barcode {
+    height: 30px;
+    width: 80%;
+    background-image: repeating-linear-gradient(
+      to right,
+      #111,
+      #111 2px,
+      transparent 2px,
+      transparent 4px,
+      #111 4px,
+      #111 5px,
+      transparent 5px,
+      transparent 8px
+    );
+}
+
+/* Glare effect */
+.id-badge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.3) 50%,
+        rgba(255,255,255,0) 100%
+    );
+    transform: skewX(-25deg);
+    animation: glare 6s infinite;
+    pointer-events: none;
+}
+
+@keyframes glare {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}
+</style>
+
+</head>
+<body>
+    <header class="container">
+        <a href="index.html" class="logo">
+            <i data-feather="layers" style="margin-right: 8px; vertical-align: bottom;"></i>
+            DataGallery.
+        </a>
+    </header>
+
+    <main class="container">
+        
+<div style="margin-bottom: var(--spacing-lg);">
+    <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 500;">
+        &larr; Back to Gallery
+    </a>
+</div>
+
+<div class="api-demo-container">
+    <div class="view-panel json-view">
+        <div class="view-header">
+            <span>Data View / JSON</span>
+            <i data-feather="code"></i>
+        </div>
+        <div class="view-body">
+            <pre>{
+  "results": [
+    {
+      "gender": "male",
+      "name": {
+        "title": "Mr",
+        "first": "Oliver",
+        "last": "De Raad"
+      },
+      "location": {
+        "street": {
+          "number": 6643,
+          "name": "Eendendaal"
+        },
+        "city": "De Waal",
+        "state": "Utrecht",
+        "country": "Netherlands",
+        "postcode": "5763 MU",
+        "coordinates": {
+          "latitude": "36.1349",
+          "longitude": "-70.3531"
+        },
+        "timezone": {
+          "offset": "+9:30",
+          "description": "Adelaide, Darwin"
+        }
+      },
+      "email": "oliver.deraad@example.com",
+      "login": {
+        "uuid": "b2ea72c2-e281-4042-a141-7eefe3af334e",
+        "username": "crazybird545",
+        "password": "asdf",
+        "salt": "7lHfbqj6",
+        "md5": "b8f7373409b9cb37e69f48c202460e34",
+        "sha1": "2d9c7275fc0407b7f6735b4819b0a3c4109758ad",
+        "sha256": "1eba04bc71f45cdf0d14152935480bf14962e556cd4a1506e4d8e17f4faea710"
+      },
+      "dob": {
+        "date": "1996-06-20T12:31:04.394Z",
+        "age": 29
+      },
+      "registered": {
+        "date": "2020-07-31T15:01:09.366Z",
+        "age": 5
+      },
+      "phone": "(0733) 451293",
+      "cell": "(06) 45208063",
+      "id": {
+        "name": "BSN",
+        "value": "90604616"
+      },
+      "picture": {
+        "large": "https://randomuser.me/api/portraits/men/99.jpg",
+        "medium": "https://randomuser.me/api/portraits/med/men/99.jpg",
+        "thumbnail": "https://randomuser.me/api/portraits/thumb/men/99.jpg"
+      },
+      "nat": "NL"
+    }
+  ],
+  "info": {
+    "seed": "f0453d757d7371a0",
+    "results": 1,
+    "page": 1,
+    "version": "1.4"
+  }
+}</pre>
+        </div>
+    </div>
+    
+    <div class="view-panel visual-view">
+        <div class="view-header">
+            <span>Visual View / Experience</span>
+            <i data-feather="eye"></i>
+        </div>
+        <div class="view-body" style="background-color: #f3f4f6; align-items: center; justify-content: center;">
+            <div class="id-badge">
+                <div class="id-header">
+                    <div class="lanyard-hole"></div>
+                </div>
+                
+                
+                
+                <div class="avatar-container">
+                    <img src="https://randomuser.me/api/portraits/men/99.jpg" alt="Profile Picture">
+                </div>
+                
+                <div class="id-body">
+                    <div class="id-name">Oliver De Raad</div>
+                    <div class="id-role">Software Engineer</div>
+                    <div class="id-location">
+                        <i data-feather="map-pin" style="width: 14px; height: 14px;"></i>
+                        De Waal, Netherlands
+                    </div>
+                </div>
+                
+                <div class="id-footer">
+                    <div class="barcode"></div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <footer class="container" style="text-align: center; padding: var(--spacing-lg) 0; color: var(--text-muted); font-size: 0.9rem;">
+        <p>Built for the 2026 Programming Course Demo. Generated dynamically with Python & Jinja2.</p>
+    </footer>
+
+    <script>
+        feather.replace();
+    </script>
+    
+</body>
+</html>

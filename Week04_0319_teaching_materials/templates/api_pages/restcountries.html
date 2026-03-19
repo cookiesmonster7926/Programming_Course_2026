@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}REST Countries Demo - API Gallery{% endblock %}
+
+{% block extra_head %}
+<style>
+.natgeo-card {
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: var(--shadow-hover);
+    position: relative;
+    border: 1px solid var(--border-color);
+}
+
+.natgeo-cover {
+    width: 100%;
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.natgeo-cover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+.natgeo-title {
+    position: absolute;
+    bottom: var(--spacing-md);
+    left: var(--spacing-md);
+    color: #fff;
+    z-index: 2;
+    font-family: "Georgia", serif;
+}
+
+.natgeo-title h2 {
+    font-size: 2.2rem;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.natgeo-title p {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.9;
+}
+
+.natgeo-stats {
+    padding: var(--spacing-lg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.stat-box {
+    border-top: 2px solid #ffcc00; /* NatGeo Yellow */
+    padding-top: var(--spacing-sm);
+}
+
+.stat-box .label {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.stat-box .value {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: var(--spacing-lg);">
+    <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 500;">
+        &larr; Back to Gallery
+    </a>
+</div>
+
+<div class="api-demo-container">
+    <div class="view-panel json-view">
+        <div class="view-header">
+            <span>Data View / JSON</span>
+            <i data-feather="code"></i>
+        </div>
+        <div class="view-body">
+            <pre>{{ json_str }}</pre>
+        </div>
+    </div>
+    
+    <div class="view-panel visual-view">
+        <div class="view-header">
+            <span>Visual View / Experience</span>
+            <i data-feather="eye"></i>
+        </div>
+        <div class="view-body" style="background-color: #fafafa; align-items: center; justify-content: center;">
+            <div class="natgeo-card">
+                {% set country = data[0] if data and data|length > 0 else none %}
+                {% if country %}
+                <div class="natgeo-cover" style="background-image: url('{{ country.flags.svg }}'); border-bottom: 4px solid #ffcc00;">
+                    <div class="natgeo-title">
+                        <h2>{{ country.name.common }}</h2>
+                        <p>{{ country.region }}</p>
+                    </div>
+                </div>
+                <div class="natgeo-stats">
+                    <div class="stat-box">
+                        <div class="label">Capital</div>
+                        <div class="value">{{ country.capital[0] if country.capital else 'N/A' }}</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">Population</div>
+                        <div class="value">{{ "{:,}".format(country.population) }}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

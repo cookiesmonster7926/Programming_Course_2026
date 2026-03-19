@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}JSONPlaceholder Demo - API Gallery{% endblock %}
+
+{% block extra_head %}
+<style>
+.reading-card {
+    background: #fff;
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl);
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 4px 60px rgba(0,0,0,0.05);
+}
+
+.reading-card .meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reading-card h2 {
+    font-family: "Georgia", serif;
+    font-size: 2.5rem;
+    color: var(--text-main);
+    line-height: 1.2;
+    margin-bottom: var(--spacing-md);
+}
+
+.reading-card hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: var(--spacing-lg) 0;
+}
+
+.reading-card p.body {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #333;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: var(--spacing-lg);">
+    <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 500;">
+        &larr; Back to Gallery
+    </a>
+</div>
+
+<div class="api-demo-container">
+    <div class="view-panel json-view">
+        <div class="view-header">
+            <span>Data View / JSON</span>
+            <i data-feather="code"></i>
+        </div>
+        <div class="view-body">
+            <pre>{{ json_str }}</pre>
+        </div>
+    </div>
+    
+    <div class="view-panel visual-view">
+        <div class="view-header">
+            <span>Visual View / Experience</span>
+            <i data-feather="eye"></i>
+        </div>
+        <div class="view-body" style="background-color: #fafafa; align-items: center;">
+            <div class="reading-card">
+                <div class="meta">
+                    <i data-feather="clock" style="width: 14px; height: 14px;"></i>
+                    1 min read
+                </div>
+                <h2>{{ data.title|capitalize }}</h2>
+                <hr>
+                <p class="body">{{ data.body }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

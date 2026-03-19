@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}PokeAPI Demo - API Gallery{% endblock %}
+
+{% block extra_head %}
+<style>
+.poke-card {
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+    width: 320px;
+    margin: 0 auto;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Holographic Overlay */
+.poke-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0) 40%,
+        rgba(255, 255, 255, 0.6) 50%,
+        rgba(255, 255, 255, 0) 60%
+    );
+    transform: rotate(30deg);
+    animation: holo 6s linear infinite;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes holo {
+    0% { transform: rotate(30deg) translateY(-100%); }
+    100% { transform: rotate(30deg) translateY(100%); }
+}
+
+.poke-img-container {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto var(--spacing-md) auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* Base glowing effect behind pokemon */
+.poke-img-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(253, 224, 71, 0.4) 0%, rgba(255,255,255,0) 70%);
+    z-index: -1;
+}
+
+.poke-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+}
+
+.poke-name {
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-lg);
+    color: #1f2937;
+    z-index: 2;
+    position: relative;
+}
+
+.poke-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    z-index: 2;
+    position: relative;
+}
+
+.poke-pill {
+    background: #f3f4f6;
+    color: #4b5563;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid #e5e7eb;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: var(--spacing-lg);">
+    <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 500;">
+        &larr; Back to Gallery
+    </a>
+</div>
+
+<div class="api-demo-container">
+    <div class="view-panel json-view">
+        <div class="view-header">
+            <span>Data View / JSON</span>
+            <i data-feather="code"></i>
+        </div>
+        <div class="view-body">
+            <pre>{{ json_str }}</pre>
+        </div>
+    </div>
+    
+    <div class="view-panel visual-view">
+        <div class="view-header">
+            <span>Visual View / Experience</span>
+            <i data-feather="eye"></i>
+        </div>
+        <div class="view-body" style="background-color: #2b2b36; align-items: center; justify-content: center;">
+            <div class="poke-card">
+                <div class="poke-img-container">
+                    <img src="{{ data.sprites.other['official-artwork'].front_default if data.sprites else '' }}" alt="{{ data.name }}">
+                </div>
+                <div class="poke-name">{{ data.name }}</div>
+                <div class="poke-stats">
+                    <div class="poke-pill">HT: {{ data.height / 10 }}m</div>
+                    <div class="poke-pill">WT: {{ data.weight / 10 }}kg</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

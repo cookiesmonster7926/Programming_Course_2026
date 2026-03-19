@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% set is_api_page = True %}
+
+{% block title %}Corporate Directory - Employees{% endblock %}
+
+{% block extra_head %}
+<style>
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+    font-family: "Inter", sans-serif;
+}
+
+.directory-header {
+    background: linear-gradient(135deg, #111, #2c2c2e);
+    padding: 80px 24px;
+    text-align: center;
+    color: white;
+}
+
+.directory-header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+}
+
+.search-bar {
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 20px 24px 20px 60px;
+    font-size: 1.2rem;
+    border-radius: 40px;
+    border: none;
+    outline: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.search-bar i {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+.profile-grid {
+    max-width: 1200px;
+    margin: -40px auto 100px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px;
+    position: relative;
+    z-index: 10;
+}
+
+.profile-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 24px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    object-fit: cover;
+    margin-bottom: 16px;
+    background: #e9ecef;
+}
+
+.user-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.user-title {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+}
+
+.contact-btn {
+    background: #e9ecef;
+    color: #495057;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.contact-btn:hover {
+    background: #212529;
+    color: #fff;
+}
+
+.hidden {
+    display: none !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="directory-header">
+    <h1>Global Employee Directory</h1>
+    <div class="search-bar">
+        <i data-feather="search"></i>
+        <input type="text" id="searchInput" placeholder="Search employees by name, country, or email..." onkeyup="filterUsers()">
+    </div>
+</div>
+
+<div class="profile-grid" id="userGrid">
+    <!-- Generated dynamically by JS to allow rendering all 10 users -->
+</div>
+
+<script>
+    const apiData = {{ json_str | safe }};
+    const users = apiData.results || [];
+    
+    const titles = ["Product Manager", "Software Engineer", "UX Designer", "Data Analyst", "Marketing Director", "Operations Lead"];
+    
+    const grid = document.getElementById('userGrid');
+    
+    // Render
+    users.forEach((user, index) => {
+        const title = titles[index % titles.length];
+        const fullName = `${user.name.first} ${user.name.last}`;
+        
+        const card = document.createElement('div');
+        card.className = 'profile-card';
+        card.setAttribute('data-name', fullName.toLowerCase());
+        card.setAttribute('data-country', user.location.country.toLowerCase());
+        card.setAttribute('data-email', user.email.toLowerCase());
+        
+        card.innerHTML = `
+            <img src="${user.picture.large}" alt="Profile Picture" class="avatar">
+            <div class="user-name">${fullName}</div>
+            <div class="user-title">${title} &bull; ${user.location.country}</div>
+            <button class="contact-btn" onclick="copyEmail('${user.email}')">
+                <i data-feather="mail" style="width:14px;height:14px;"></i> Contact
+            </button>
+        `;
+        grid.appendChild(card);
+    });
+
+    // Handle Search Filter functionality
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        const cards = document.querySelectorAll('.user-card');
+        
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            const country = card.getAttribute('data-country');
+            const email = card.getAttribute('data-email');
+            
+            if (name.includes(term) || country.includes(term) || email.includes(term)) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+
+    // Dynamic fetch on load to ensure different data every time
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('https://randomuser.me/api/?results=10');
+            const data = await res.json();
+            const users = data.results;
+            
+            const grid = document.getElementById('employeeGrid');
+            grid.innerHTML = '';
+            
+            users.forEach(u => {
+                const name = `${u.name.first} ${u.name.last}`;
+                const email = u.email;
+                const country = u.location.country;
+                const pic = u.picture.large;
+                
+                grid.innerHTML += `
+                    <div class="profile-card user-card" data-name="${name.toLowerCase()}" data-email="${email.toLowerCase()}" data-country="${country.toLowerCase()}">
+                        <img src="${pic}" class="avatar user-avatar" alt="Avatar">
+                        <div class="user-name">${name}</div>
+                        <div class="user-title"><i data-feather="map-pin" style="width:14px"></i> ${country}</div>
+                        <button class="contact-btn" onclick="copyEmail('${email}')">
+                            <i data-feather="mail" style="width:14px;height:14px;"></i> Contact
+                        </button>
+                    </div>
+                `;
+            });
+            feather.replace();
+            
+            // Update dev toggle json if it exists
+            const jsonOverlay = document.querySelector('.json-body pre');
+            if (jsonOverlay) {
+                jsonOverlay.innerText = JSON.stringify(data, null, 2);
+            }
+        } catch (e) { console.error('Dynamic fetch failed, falling back to static markup'); }
+    });
+
+    function copyEmail(email) {
+        event.stopPropagation();
+        alert("Simulated: Copied " + email + " to clipboard!");
+    }
+</script>
+{% endblock %}

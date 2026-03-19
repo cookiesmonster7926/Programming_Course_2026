@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}RandomUser API Demo - API Gallery{% endblock %}
+
+{% block extra_head %}
+<style>
+.id-badge {
+    background: #fff;
+    width: 300px;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    margin: 0 auto;
+    position: relative;
+    border: 1px solid #e5e7eb;
+}
+
+.id-header {
+    background: var(--gradient-accent);
+    height: 120px;
+    position: relative;
+}
+
+/* Lanyard hole */
+.lanyard-hole {
+    width: 40px;
+    height: 10px;
+    background: #fff;
+    border-radius: 10px;
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.avatar-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: -60px auto 0 auto;
+    background: #fff;
+    padding: 4px;
+    position: relative;
+    z-index: 2;
+}
+
+.avatar-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.id-body {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+    text-align: center;
+}
+
+.id-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 4px;
+}
+
+.id-role {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+}
+
+.id-location {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.id-footer {
+    background: #f9fafb;
+    padding: var(--spacing-md);
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: center;
+}
+
+/* Fake Barcode */
+.barcode {
+    height: 30px;
+    width: 80%;
+    background-image: repeating-linear-gradient(
+      to right,
+      #111,
+      #111 2px,
+      transparent 2px,
+      transparent 4px,
+      #111 4px,
+      #111 5px,
+      transparent 5px,
+      transparent 8px
+    );
+}
+
+/* Glare effect */
+.id-badge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.3) 50%,
+        rgba(255,255,255,0) 100%
+    );
+    transform: skewX(-25deg);
+    animation: glare 6s infinite;
+    pointer-events: none;
+}
+
+@keyframes glare {
+    0% { left: -100%; }
+    20% { left: 200%; }
+    100% { left: 200%; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: var(--spacing-lg);">
+    <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 500;">
+        &larr; Back to Gallery
+    </a>
+</div>
+
+<div class="api-demo-container">
+    <div class="view-panel json-view">
+        <div class="view-header">
+            <span>Data View / JSON</span>
+            <i data-feather="code"></i>
+        </div>
+        <div class="view-body">
+            <pre>{{ json_str }}</pre>
+        </div>
+    </div>
+    
+    <div class="view-panel visual-view">
+        <div class="view-header">
+            <span>Visual View / Experience</span>
+            <i data-feather="eye"></i>
+        </div>
+        <div class="view-body" style="background-color: #f3f4f6; align-items: center; justify-content: center;">
+            <div class="id-badge">
+                <div class="id-header">
+                    <div class="lanyard-hole"></div>
+                </div>
+                
+                {% set user = data.results[0] if data and data.results else none %}
+                {% if user %}
+                <div class="avatar-container">
+                    <img src="{{ user.picture.large }}" alt="Profile Picture">
+                </div>
+                
+                <div class="id-body">
+                    <div class="id-name">{{ user.name.first }} {{ user.name.last }}</div>
+                    <div class="id-role">Software Engineer</div>
+                    <div class="id-location">
+                        <i data-feather="map-pin" style="width: 14px; height: 14px;"></i>
+                        {{ user.location.city }}, {{ user.location.country }}
+                    </div>
+                </div>
+                
+                <div class="id-footer">
+                    <div class="barcode"></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}GitHub API Demo - API Gallery{% endblock %}
+
+{% block extra_head %}
+<style>
+.dev-card {
+    background: linear-gradient(135deg, #111111, #24292e);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    width: 100%;
+    color: #fff;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border: 1px solid #3d4450;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.dev-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+}
+
+.dev-card-header h2 {
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dev-card-header p {
+    color: #8b949e;
+    font-size: 1.05rem;
+    max-width: 80%;
+}
+
+.dev-badge {
+    background: #238636;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.dev-stats {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #58a6ff;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: #8b949e;
+    letter-spacing: 0.05em;
+}
+
+.lang-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #3572A5; /* Python blue */
+    margin-right: 6px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: var(--spacing-lg);">
+    <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 500;">
+        &larr; Back to Gallery
+    </a>
+</div>
+
+<div class="api-demo-container">
+    <div class="view-panel json-view">
+        <div class="view-header">
+            <span>Data View / JSON</span>
+            <i data-feather="code"></i>
+        </div>
+        <div class="view-body">
+            <pre>{{ json_str }}</pre>
+        </div>
+    </div>
+    
+    <div class="view-panel visual-view">
+        <div class="view-header">
+            <span>Visual View / Experience</span>
+            <i data-feather="eye"></i>
+        </div>
+        <div class="view-body" style="background-color: #0d1117; align-items: center; padding: var(--spacing-xl);">
+            {% if data.name %}
+            <div class="dev-card">
+                <div class="dev-card-header">
+                    <div>
+                        <h2><i data-feather="github" style="width: 28px; height: 28px;"></i> {{ data.full_name }}</h2>
+                        <p>{{ data.description }}</p>
+                    </div>
+                    <span class="dev-badge">Public</span>
+                </div>
+                
+                <div class="dev-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">{{ "{:,}".format(data.stargazers_count) }}</span>
+                        <span class="stat-label">Stars 🌟</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" style="color: #3fb950;">{{ "{:,}".format(data.forks_count) }}</span>
+                        <span class="stat-label">Forks 🍴</span>
+                    </div>
+                    <div class="stat-item" style="margin-left: auto; text-align: right; justify-content: flex-end;">
+                        <div style="font-size: 1.1rem; color: #fff;">
+                            <span class="lang-dot" style="background-color: #e34c26;"></span> <!-- Defaulting to rust/python tone for UV -->
+                            {{ data.language }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div style="color: white;">Rate limited or Not Found</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

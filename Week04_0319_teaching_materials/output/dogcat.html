@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog/Cat API Demo - API Gallery</title>
+    <!-- Modern Sans-Serif Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+    <!-- Feather Icons for Beautiful SVG Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+<style>
+.art-gallery-wall {
+    background-color: #e8e8e8;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    /* Subtle wall texture */
+    background-image: radial-gradient(#d4d4d4 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.polaroid-frame {
+    background: #fff;
+    padding: 24px 24px 72px 24px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1), 0 5px 15px rgba(0,0,0,0.05);
+    position: relative;
+    max-width: 400px;
+    /* Slight rotation for realism */
+    transform: rotate(-2deg);
+    transition: transform 0.3s ease;
+}
+
+.polaroid-frame:hover {
+    transform: rotate(0deg) scale(1.02);
+}
+
+.polaroid-img {
+    width: 100%;
+    height: auto;
+    border-radius: 2px;
+    display: block;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
+.art-plaque {
+    position: absolute;
+    bottom: -60px;
+    right: -40px;
+    background: #fdfdfd;
+    border: 1px solid #dcdcdc;
+    padding: 12px 20px;
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.05);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    transform: rotate(2deg);
+}
+
+.art-plaque h3 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #111;
+    margin-bottom: 4px;
+}
+
+.art-plaque p {
+    font-size: 0.7rem;
+    color: #666;
+}
+</style>
+
+</head>
+<body>
+    <header class="container">
+        <a href="index.html" class="logo">
+            <i data-feather="layers" style="margin-right: 8px; vertical-align: bottom;"></i>
+            DataGallery.
+        </a>
+    </header>
+
+    <main class="container">
+        
+<div style="margin-bottom: var(--spacing-lg);">
+    <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-weight: 500;">
+        &larr; Back to Gallery
+    </a>
+</div>
+
+<div class="api-demo-container">
+    <div class="view-panel json-view">
+        <div class="view-header">
+            <span>Data View / JSON</span>
+            <i data-feather="code"></i>
+        </div>
+        <div class="view-body">
+            <pre>[
+  {
+    "id": "uHqxcSzA2Q",
+    "url": "https://storage.googleapis.com/cdn4.thedogapi.com/optimized/uHqxcSzA2Q.jpg",
+    "width": 1152,
+    "height": 928
+  }
+]</pre>
+        </div>
+    </div>
+    
+    <div class="view-panel visual-view">
+        <div class="view-header">
+            <span>Visual View / Experience</span>
+            <i data-feather="eye"></i>
+        </div>
+        <div class="view-body" style="padding: 0;">
+            <div class="art-gallery-wall">
+                <div class="polaroid-frame">
+                    
+                    <img src="https://storage.googleapis.com/cdn4.thedogapi.com/optimized/uHqxcSzA2Q.jpg" alt="Random Animal" class="polaroid-img">
+                    
+                    
+                    <div class="art-plaque">
+                        <h3>Random Generate</h3>
+                        <p>API Digital Collection / 2026</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <footer class="container" style="text-align: center; padding: var(--spacing-lg) 0; color: var(--text-muted); font-size: 0.9rem;">
+        <p>Built for the 2026 Programming Course Demo. Generated dynamically with Python & Jinja2.</p>
+    </footer>
+
+    <script>
+        feather.replace();
+    </script>
+    
+</body>
+</html>
