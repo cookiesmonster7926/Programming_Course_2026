@@ -146,8 +146,9 @@ if __name__ == "__main__":
 
     print("=" * 50)
     print("  Flask Data Hub 啟動中...")
-    print("  開啟瀏覽器前往：http://127.0.0.1:5000")
-    print("  你的 API 端點：http://127.0.0.1:5000/api/posts")
+    print("  開啟瀏覽器前往：http://127.0.0.1:5001")
+    print("  你的 API 端點：http://127.0.0.1:5001/api/posts")
     print("=" * 50)
 
-    app.run(debug=True)
+    # macOS 的 AirPlay Receiver 預設佔用 5000，改用 5001
+    app.run(debug=True, port=5001)
