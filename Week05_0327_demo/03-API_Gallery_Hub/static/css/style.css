@@ -332,6 +332,82 @@ code {
 .toast-error   { background: #1a0505; color: #f87171; border: 1px solid #400d0d; }
 
 /* =============================================================================
+   /view 頁：Tab 篩選條
+   ============================================================================= */
+.tab-bar {
+    max-width: 1200px; margin: 24px auto 16px;
+    padding: 0 24px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+}
+
+.tab {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); transition: all .15s;
+}
+.tab:hover { border-color: #333; color: var(--text); }
+.tab-active { background: #1a1a1a; color: var(--text); border-color: #444; }
+
+/* =============================================================================
+   /view 頁：資料卡片 Grid
+   ============================================================================= */
+.cards-area {
+    max-width: 1200px; margin: 0 auto 60px;
+    padding: 0 24px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+}
+
+.data-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: border-color .2s;
+}
+.data-card:hover { border-color: #333; }
+
+.border-pokeapi { border-left: 3px solid var(--poke); }
+.border-github  { border-left: 3px solid var(--github); }
+.border-weather { border-left: 3px solid var(--weather); }
+.border-user    { border-left: 3px solid var(--user); }
+
+.data-card-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+}
+
+.source-tag {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px; border: 1px solid;
+}
+.tag-pokeapi { color: var(--poke);    border-color: var(--poke);    background: rgba(205,40,52,.08); }
+.tag-github  { color: var(--github);  border-color: var(--github);  background: rgba(63,178,127,.08); }
+.tag-weather { color: var(--weather); border-color: var(--weather); background: rgba(56,189,248,.08); }
+.tag-user    { color: var(--user);    border-color: var(--user);    background: rgba(167,139,250,.08); }
+
+.data-id { font-size: 11px; color: var(--muted); font-family: monospace; }
+.data-title { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.4; }
+.data-content { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.data-time { font-size: 10px; color: #2a2a2a; margin-top: 2px; font-family: monospace; }
+
+/* 空狀態 */
+.empty-state {
+    text-align: center; padding: 80px 20px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 12px;
+}
+.empty-icon { font-size: 56px; }
+.empty-state h2 { font-size: 1.2rem; color: #fff; }
+.empty-state p  { font-size: 13px; color: var(--muted); }
+
+/* =============================================================================
    頁尾
    ============================================================================= */
 .site-footer {
