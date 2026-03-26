@@ -1,0 +1,308 @@
+/* =============================================================================
+   Data Collector Hub - 全站樣式
+   設計原則：清楚、現代、適合投影給大一學生看
+   ============================================================================= */
+
+/* ── 全域重置 ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── CSS 變數（統一管理顏色，方便之後修改）── */
+:root {
+    --bg:         #0f1117;
+    --surface:    #1a1d27;
+    --border:     #2e3250;
+    --text:       #e8eaf6;
+    --muted:      #8b92b8;
+    --blue:       #6c8ef5;
+    --green:      #4caf87;
+    --purple:     #a78bfa;
+    --red:        #f06292;
+    --radius:     14px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* ── 整頁容器，限制最大寬度 ── */
+.page-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+}
+
+/* =============================================================================
+   頁首
+   ============================================================================= */
+.site-header {
+    margin-bottom: 32px;
+}
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo-icon {
+    font-size: 36px;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.logo p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+/* =============================================================================
+   說明文字區
+   ============================================================================= */
+.intro {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.intro code {
+    background: #22263a;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: "Fira Code", "Courier New", monospace;
+    color: var(--blue);
+    font-size: 13px;
+}
+
+.intro strong {
+    color: var(--text);
+}
+
+/* =============================================================================
+   三格按鈕區（首頁）
+   ============================================================================= */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.action-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color .2s, transform .2s;
+}
+
+.action-card:hover {
+    border-color: var(--blue);
+    transform: translateY(-2px);
+}
+
+.action-icon {
+    font-size: 32px;
+}
+
+.action-card h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.action-desc {
+    font-size: 13px;
+    color: var(--muted);
+    flex: 1;
+}
+
+.action-desc strong {
+    color: var(--text);
+}
+
+.action-desc code {
+    background: #22263a;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: var(--blue);
+    font-size: 12px;
+}
+
+/* API URL 標籤 */
+.api-url {
+    font-family: "Fira Code", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: #0f1117;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    word-break: break-all;
+}
+
+/* =============================================================================
+   按鈕
+   ============================================================================= */
+.btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: all .15s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-blue   { background: var(--blue);   color: #fff; }
+.btn-green  { background: var(--green);  color: #fff; }
+.btn-purple { background: var(--purple); color: #fff; }
+
+.btn-blue:hover   { background: #8aa8ff; transform: translateY(-1px); }
+.btn-green:hover  { background: #6dcfa4; transform: translateY(-1px); }
+.btn-purple:hover { background: #c4b5fd; transform: translateY(-1px); }
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+}
+.btn-outline:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: rgba(108, 142, 245, .08);
+}
+
+/* =============================================================================
+   資料卡片區（view 頁）
+   ============================================================================= */
+.cards-area {
+    margin-bottom: 40px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.data-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color .2s;
+}
+
+.data-card:hover {
+    border-color: var(--blue);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+/* 來源標籤，依來源顯示不同顏色 */
+.source-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: #22263a;
+    border: 1px solid var(--border);
+}
+
+.source-jsonplaceholder { color: var(--blue);   border-color: var(--blue); }
+.source-github          { color: var(--green);  border-color: var(--green); }
+
+.card-id {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: monospace;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.4;
+}
+
+.card-content {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* 空資料庫提示 */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.empty-icon {
+    font-size: 56px;
+}
+
+.empty-state h2 {
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.empty-state p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+/* =============================================================================
+   頁尾
+   ============================================================================= */
+.site-footer {
+    text-align: center;
+    font-size: 11px;
+    color: #3d4270;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+}

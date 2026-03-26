@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Collector Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- ===== 頁首 ===== -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-icon">📡</span>
+                <div>
+                    <h1>Data Collector Hub</h1>
+                    <p>跨平台資料蒐集器 · Week 05</p>
+                </div>
+            </div>
+            <a href="/view" class="btn btn-outline">查看資料庫 →</a>
+        </div>
+    </header>
+
+    <!-- ===== 說明區 ===== -->
+    <section class="intro">
+        <p>
+            點擊下方按鈕，後端會用 <code>requests</code> 去抓外部 API 的資料，
+            再存進本機的 <strong>SQLite 資料庫</strong>。
+            每按一次就會新增一筆紀錄。
+        </p>
+    </section>
+
+    <!-- ===== 三顆功能按鈕 ===== -->
+    <main class="action-grid">
+
+        <!-- 按鈕 1：抓 JSONPlaceholder -->
+        <div class="action-card">
+            <div class="action-icon">🌐</div>
+            <h2>抓取 Web API</h2>
+            <p class="action-desc">
+                向 <strong>JSONPlaceholder</strong> 請求一篇示範文章（/posts/1），
+                並將標題與內容存入資料庫。
+            </p>
+            <div class="api-url">GET jsonplaceholder.typicode.com/posts/1</div>
+            <a href="/fetch_web" class="btn btn-blue">
+                ▶ 執行抓取
+            </a>
+        </div>
+
+        <!-- 按鈕 2：抓 GitHub API -->
+        <div class="action-card">
+            <div class="action-icon">🐙</div>
+            <h2>抓取 GitHub 資料</h2>
+            <p class="action-desc">
+                向 <strong>GitHub API</strong> 請求 Google 官方帳號的公開資訊，
+                並將名稱與簡介存入資料庫。
+            </p>
+            <div class="api-url">GET api.github.com/users/google</div>
+            <a href="/fetch_github" class="btn btn-green">
+                ▶ 執行抓取
+            </a>
+        </div>
+
+        <!-- 按鈕 3：提供 API 給鄰座同學 -->
+        <div class="action-card">
+            <div class="action-icon">🔗</div>
+            <h2>開放 API 端點</h2>
+            <p class="action-desc">
+                你的 Flask 伺服器也能對外提供資料！
+                鄰座同學可以用 <code>client.py</code> 來抓你的資料。
+            </p>
+            <div class="api-url">GET 127.0.0.1:5000/api/posts</div>
+            <a href="/api/posts" target="_blank" class="btn btn-purple">
+                ▶ 查看 JSON
+            </a>
+        </div>
+
+    </main>
+
+    <!-- ===== 頁尾提示 ===== -->
+    <footer class="site-footer">
+        <p>程式設計實習 2026 · 逢甲大學 · 本頁面是 Flask 渲染的 HTML</p>
+    </footer>
+
+</div>
+
+</body>
+</html>

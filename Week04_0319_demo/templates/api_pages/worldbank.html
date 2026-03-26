@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% set is_api_page = True %}
+
+{% block title %}World Population Trends{% endblock %}
+
+{% block extra_head %}
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    background-color: #f7f9fc;
+    color: #1e293b;
+    font-family: 'Inter', sans-serif;
+}
+.dashboard-container {
+    max-width: 1200px;
+    margin: 100px auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+}
+.dash-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.dash-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+.dash-header p {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+.chart-wrapper {
+    position: relative;
+    height: 500px;
+    width: 100%;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 1px solid #e2e8f0;
+}
+.stat-box {
+    text-align: center;
+}
+.stat-label {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dash-header">
+        <h1>Global Population Growth</h1>
+        <p>A 60-year retrospective powered by the World Bank API (SP.POP.TOTL)</p>
+    </div>
+    
+    <div class="chart-wrapper">
+        <canvas id="populationChart"></canvas>
+    </div>
+    
+    {% if data and data|length > 1 %}
+        {% set latest = data[1][0] %}
+        {% set oldest = data[1][-1] %}
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Current Population ({{ latest.date }})</div>
+                <div class="stat-value" id="currentPop">{{ "{:,}".format(latest.value|int) }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Population in {{ oldest.date }}</div>
+                <div class="stat-value">{{ "{:,}".format(oldest.value|int) if oldest.value else "N/A" }}</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Net Growth</div>
+                <div class="stat-value" style="color:#10b981;">+{{ "{:,}".format((latest.value|int) - (oldest.value|int)) }}</div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Functional Chart Initialization -->
+<script>
+    // Ingest the raw JSON data
+    const apiData = {{ json_str | safe }};
+    
+    // We expect the array data to be in apiData[1]
+    if (apiData && apiData.length > 1) {
+        let records = apiData[1];
+        
+        // The API returns data sequentially from newest to oldest. We want chronologically for the chart.
+        records = records.filter(r => r.value !== null).reverse(); 
+        
+        const labels = records.map(r => r.date);
+        const values = records.map(r => r.value);
+        
+        const ctx = document.getElementById('populationChart').getContext('2d');
+        
+        // Create an elegant gradient fill
+        let gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)'); // Blue-500
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)'); // Transparent Blue
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'World Population',
+                    data: values,
+                    borderColor: '#3b82f6',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4 // Smooth curves
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { size: 14, family: 'Inter' },
+                        bodyFont: { size: 14, family: 'Inter' },
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y.toLocaleString() + ' humans';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxTicksLimit: 10, color: '#94a3b8' }
+                    },
+                    y: {
+                        grid: { borderDash: [4, 4], color: '#e2e8f0' },
+                        ticks: {
+                            color: '#94a3b8',
+                            callback: function(value) {
+                                return (value / 1e9).toFixed(1) + ' Billion';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料庫內容 · Data Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- ===== 頁首 ===== -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-icon">🗄️</span>
+                <div>
+                    <h1>資料庫內容</h1>
+                    <p>external_posts 資料表 · 共 {{ posts|length }} 筆</p>
+                </div>
+            </div>
+            <a href="/" class="btn btn-outline">← 返回首頁</a>
+        </div>
+    </header>
+
+    <!-- ===== 資料卡片區 ===== -->
+    <main class="cards-area">
+
+        {# Jinja2 語法：如果 posts 是空的，顯示提示訊息 #}
+        {% if posts %}
+
+            <div class="card-grid">
+                {% for post in posts %}
+                <div class="data-card">
+                    <!-- 來源標籤 -->
+                    <div class="card-header">
+                        <span class="source-badge source-{{ post['source'] | lower | replace(' ', '-') }}">
+                            {% if post['source'] == 'JSONPlaceholder' %}🌐{% elif post['source'] == 'GitHub' %}🐙{% else %}📦{% endif %}
+                            {{ post['source'] }}
+                        </span>
+                        <span class="card-id"># {{ post['id'] }}</span>
+                    </div>
+
+                    <!-- 標題 -->
+                    <h3 class="card-title">{{ post['title'] }}</h3>
+
+                    <!-- 內容 -->
+                    <p class="card-content">{{ post['content'] }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <!-- 空資料庫的提示 -->
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h2>資料庫還是空的</h2>
+                <p>回到首頁點擊按鈕來抓取資料吧！</p>
+                <a href="/" class="btn btn-blue">← 回首頁抓資料</a>
+            </div>
+        {% endif %}
+
+    </main>
+
+    <footer class="site-footer">
+        <p>程式設計實習 2026 · 逢甲大學 · 資料儲存於本機 test.db</p>
+    </footer>
+
+</div>
+
+</body>
+</html>

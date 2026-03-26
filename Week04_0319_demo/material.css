@@ -1,0 +1,20 @@
+/* 針對 class="card" 的盒子進行美化 */
+.card {
+    font-family: sans-serif;
+    /* 使用乾淨的無襯線字體 */
+    width: 300px;
+    /* 卡片寬度 */
+    padding: 20px;
+    /* 內邊距：留白的藝術 */
+    border-radius: 16px;
+    /* 1. 柔和的圓角 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* 2. 淡淡的高級陰影 */
+}
+
+/* 確保卡片內的圖片不會破版 */
+.card img {
+    width: 100%;
+    border-radius: 8px;
+    /* 圖片也加上小圓角 */
+}

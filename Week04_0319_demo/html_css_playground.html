@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML & CSS 互動教學 Playground</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #6c8ef5;
+    --accent2: #f06292;
+    --text: #e8eaf6;
+    --text-dim: #8b92b8;
+    --code-bg: #0d1020;
+    --green: #4caf87;
+    --yellow: #f5c842;
+    --red: #f06292;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 52px 1fr;
+    overflow: hidden;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    z-index: 10;
+  }
+  header h1 { font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: .4px; }
+  header span { font-size: 12px; color: var(--text-dim); }
+
+  .tab-bar { display: flex; gap: 2px; margin-left: auto; }
+  .tab-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .tab-btn:hover { background: var(--surface2); color: var(--text); }
+  .tab-btn.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+  /* ── Main Layout ── */
+  main {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    overflow: hidden;
+  }
+
+  /* ── Controls Panel ── */
+  #controls {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ctrl-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .ctrl-section-header {
+    padding: 9px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: rgba(255,255,255,.03);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .ctrl-section-header .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .ctrl-body { padding: 12px 10px; display: flex; flex-direction: column; gap: 10px; }
+
+  .ctrl-row { display: flex; flex-direction: column; gap: 5px; }
+  .ctrl-row label {
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ctrl-row label span {
+    font-family: 'SF Mono', monospace;
+    color: var(--accent);
+    font-size: 11px;
+  }
+
+  select, input[type=text] {
+    width: 100%;
+    padding: 6px 8px;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+  }
+  select:focus, input[type=text]:focus { border-color: var(--accent); }
+
+  input[type=range] {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  input[type=color] {
+    width: 36px; height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: none;
+    cursor: pointer;
+    padding: 2px;
+  }
+
+  .color-row { display: flex; align-items: center; gap: 8px; }
+  .color-row label { font-size: 11px; color: var(--text-dim); flex: 1; }
+
+  .toggle-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .toggle-btn {
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--code-bg);
+    color: var(--text-dim);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: monospace;
+  }
+  .toggle-btn:hover { border-color: var(--accent); color: var(--text); }
+  .toggle-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* Preset buttons */
+  .preset-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .preset-btn {
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .preset-btn:hover { background: var(--surface2); border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── Right Panel ── */
+  #right-panel {
+    display: grid;
+    grid-template-rows: 1fr 1fr 80px;
+    overflow: hidden;
+  }
+
+  /* Preview */
+  #preview-wrap {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: auto;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .panel-label::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  #preview-stage {
+    flex: 1;
+    background: #fff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    padding: 30px;
+    overflow: auto;
+    position: relative;
+  }
+  #preview-stage.dark-bg { background: #1a1a2e; }
+  #preview-stage.pattern-bg {
+    background-image: repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0),
+      repeating-linear-gradient(45deg, #f0f0f0 25%, #fff 25%, #fff 75%, #f0f0f0 75%, #f0f0f0);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+  }
+
+  .bg-toggle { display: flex; gap: 4px; margin-left: auto; }
+  .bg-btn {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 10px;
+  }
+
+  /* Code area */
+  #code-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .code-pane {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .code-pane:first-child { border-right: 1px solid var(--border); }
+  .code-header {
+    padding: 6px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,.02);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .code-header .lang-badge {
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+  }
+  .html-badge { background: #e44d26; color: #fff; }
+  .css-badge { background: #264de4; color: #fff; }
+
+  #html-code, #css-code {
+    flex: 1;
+    padding: 12px 14px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--code-bg);
+    overflow: auto;
+    white-space: pre;
+  }
+
+  /* Syntax highlight classes */
+  .hl-tag { color: #f07178; }
+  .hl-attr { color: #ffcb6b; }
+  .hl-val { color: #c3e88d; }
+  .hl-prop { color: #82aaff; }
+  .hl-pval { color: #c3e88d; }
+  .hl-comment { color: #546e7a; font-style: italic; }
+  .hl-sel { color: #f07178; }
+  .hl-num { color: #f78c6c; }
+
+  /* Prompt output */
+  #prompt-wrap {
+    padding: 10px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: var(--surface);
+  }
+  #prompt-text {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    font-style: italic;
+  }
+  #copy-btn {
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  #copy-btn:hover { background: #8aa8ff; }
+  #copy-btn.copied { background: var(--green); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎨 HTML & CSS 互動教學</h1>
+  <span>即時調整 → 看效果 → 學程式碼</span>
+  <nav class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('html')">HTML 元素</button>
+    <button class="tab-btn" onclick="switchTab('typography')">文字樣式</button>
+    <button class="tab-btn" onclick="switchTab('box')">盒子模型</button>
+    <button class="tab-btn" onclick="switchTab('layout')">Flexbox 排版</button>
+  </nav>
+</header>
+
+<main>
+  <div id="controls"><!-- filled by JS --></div>
+
+  <div id="right-panel">
+    <div id="preview-wrap">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="panel-label">即時預覽</div>
+        <div class="bg-toggle">
+          <button class="bg-btn" style="background:#fff;" title="白色背景" onclick="setBg('white')">W</button>
+          <button class="bg-btn" style="background:#1a1a2e;color:#fff;" title="深色背景" onclick="setBg('dark')">D</button>
+          <button class="bg-btn" style="background:repeating-linear-gradient(45deg,#eee 0,#eee 5px,#fff 5px,#fff 10px);" title="格紋背景" onclick="setBg('pattern')">P</button>
+        </div>
+      </div>
+      <div id="preview-stage"></div>
+    </div>
+
+    <div id="code-wrap">
+      <div class="code-pane">
+        <div class="code-header">
+          <span class="lang-badge html-badge">HTML</span>
+          程式碼
+        </div>
+        <div id="html-code"></div>
+      </div>
+      <div class="code-pane">
+        <div class="code-header">
+          <span class="lang-badge css-badge">CSS</span>
+          樣式
+        </div>
+        <div id="css-code"></div>
+      </div>
+    </div>
+
+    <div id="prompt-wrap">
+      <div id="prompt-text">調整左側控制項，即時看到 HTML 與 CSS 程式碼變化。</div>
+      <button id="copy-btn" onclick="copyPrompt()">複製程式碼</button>
+    </div>
+  </div>
+</main>
+
+<script>
+// ─────────────────────────────────────────
+// State
+// ─────────────────────────────────────────
+let currentTab = 'html';
+
+const state = {
+  // HTML tab
+  htmlTag: 'h1',
+  content: '你好，世界！',
+  htmlColor: '#222222',
+  htmlBg: '#ffffff',
+  fontSize: 32,
+  fontWeight: '700',
+  fontFamily: 'sans-serif',
+  textAlign: 'center',
+  italic: false,
+  underline: false,
+
+  // Typography tab
+  typoFontSize: 16,
+  typoLineHeight: 1.6,
+  typoLetterSpacing: 0,
+  typoColor: '#333333',
+  typoFontFamily: 'sans-serif',
+  typoFontWeight: '400',
+  typoTextTransform: 'none',
+
+  // Box tab
+  boxBg: '#6c8ef5',
+  boxColor: '#ffffff',
+  boxPaddingX: 20,
+  boxPaddingY: 12,
+  boxMargin: 0,
+  boxBorderWidth: 0,
+  boxBorderColor: '#444466',
+  boxBorderStyle: 'solid',
+  boxRadius: 8,
+  boxShadow: 8,
+  boxWidth: 200,
+
+  // Flexbox tab
+  flexBg: '#1a2040',
+  flexGap: 12,
+  flexDirection: 'row',
+  flexJustify: 'center',
+  flexAlign: 'center',
+  flexWrap: false,
+  flexItemCount: 4,
+  flexItemBg: '#6c8ef5',
+};
+
+// ─────────────────────────────────────────
+// Tabs
+// ─────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['html','typography','box','layout'][i] === tab);
+  });
+  renderControls();
+  updateAll();
+}
+
+// ─────────────────────────────────────────
+// Controls builder
+// ─────────────────────────────────────────
+function renderControls() {
+  const panel = document.getElementById('controls');
+  if (currentTab === 'html') panel.innerHTML = buildHtmlControls();
+  else if (currentTab === 'typography') panel.innerHTML = buildTypoControls();
+  else if (currentTab === 'box') panel.innerHTML = buildBoxControls();
+  else panel.innerHTML = buildFlexControls();
+  bindControls();
+}
+
+function section(title, dot, body) {
+  return `<div class="ctrl-section">
+    <div class="ctrl-section-header"><span class="dot" style="background:${dot}"></span>${title}</div>
+    <div class="ctrl-body">${body}</div>
+  </div>`;
+}
+
+function slider(key, label, min, max, unit='', step=1) {
+  const v = state[key];
+  return `<div class="ctrl-row">
+    <label>${label} <span>${v}${unit}</span></label>
+    <input type="range" min="${min}" max="${max}" step="${step}" value="${v}" data-key="${key}" oninput="setState('${key}',+this.value)">
+  </div>`;
+}
+
+function dropdown(key, label, options) {
+  const opts = options.map(([v,l]) => `<option value="${v}"${state[key]===v?' selected':''}>${l}</option>`).join('');
+  return `<div class="ctrl-row">
+    <label>${label}</label>
+    <select data-key="${key}" onchange="setState('${key}',this.value)">${opts}</select>
+  </div>`;
+}
+
+function colorPicker(key, label) {
+  return `<div class="color-row">
+    <label>${label}</label>
+    <input type="color" value="${state[key]}" data-key="${key}" oninput="setState('${key}',this.value)">
+  </div>`;
+}
+
+function textInput(key, label) {
+  return `<div class="ctrl-row">
+    <label>${label}</label>
+    <input type="text" value="${escHtml(state[key])}" data-key="${key}" oninput="setState('${key}',this.value)">
+  </div>`;
+}
+
+function toggleBtn(key, label) {
+  const on = state[key];
+  return `<button class="toggle-btn ${on?'on':''}" onclick="toggleState('${key}')">${label}</button>`;
+}
+
+function presets(list) {
+  const btns = list.map(([label, fn]) =>
+    `<button class="preset-btn" onclick="${fn}">${label}</button>`
+  ).join('');
+  return `<div class="ctrl-row"><label>快速範例</label><div class="preset-row">${btns}</div></div>`;
+}
+
+// ── HTML tab controls ──
+function buildHtmlControls() {
+  return section('HTML 元素', '#f07178', `
+    ${presets([
+      ['標題 H1', "applyPreset('htmlH1')"],
+      ['按鈕', "applyPreset('htmlBtn')"],
+      ['卡片', "applyPreset('htmlCard')"],
+      ['標籤', "applyPreset('htmlBadge')"],
+      ['連結', "applyPreset('htmlLink')"],
+    ])}
+    ${dropdown('htmlTag', '標籤類型', [
+      ['h1','<h1> 大標題'],['h2','<h2> 中標題'],['h3','<h3> 小標題'],
+      ['p','<p> 段落'],['button','<button> 按鈕'],
+      ['a','<a> 連結'],['span','<span> 行內文字'],['div','<div> 區塊'],
+    ])}
+    ${textInput('content','內容文字')}
+    ${colorPicker('htmlColor','文字顏色')}
+    ${colorPicker('htmlBg','背景顏色')}
+  `) +
+  section('文字屬性', '#ffcb6b', `
+    ${slider('fontSize','字體大小',10,72,'px')}
+    ${dropdown('fontWeight','粗細', [['300','Light 300'],['400','Regular 400'],['600','SemiBold 600'],['700','Bold 700'],['900','Black 900']])}
+    ${dropdown('fontFamily','字體', [['sans-serif','Sans-serif（無襯線）'],['serif','Serif（有襯線）'],['monospace','Monospace（等寬）'],['cursive','Cursive（草書）']])}
+    ${dropdown('textAlign','對齊', [['left','靠左'],['center','置中'],['right','靠右'],['justify','兩端對齊']])}
+    <div class="ctrl-row">
+      <label>樣式修飾</label>
+      <div class="toggle-group">
+        ${toggleBtn('italic','斜體 italic')}
+        ${toggleBtn('underline','底線 underline')}
+      </div>
+    </div>
+  `);
+}
+
+// ── Typography tab controls ──
+function buildTypoControls() {
+  return section('文字排版', '#c3e88d', `
+    ${presets([
+      ['內文', "applyPreset('typoBody')"],
+      ['標題', "applyPreset('typoHeading')"],
+      ['說明文', "applyPreset('typoCaption')"],
+      ['程式碼', "applyPreset('typoCode')"],
+    ])}
+    ${slider('typoFontSize','字體大小',10,72,'px')}
+    ${slider('typoLineHeight','行高 line-height',1,3,'',.1)}
+    ${slider('typoLetterSpacing','字距 letter-spacing',-2,10,'px')}
+    ${dropdown('typoFontFamily','字體', [
+      ['sans-serif','Sans-serif'],['serif','Serif'],['monospace','Monospace'],['cursive','Cursive']
+    ])}
+    ${dropdown('typoFontWeight','粗細', [
+      ['300','300 Light'],['400','400 Regular'],['500','500 Medium'],
+      ['600','600 SemiBold'],['700','700 Bold'],['900','900 Black']
+    ])}
+    ${dropdown('typoTextTransform','大小寫', [
+      ['none','none（預設）'],['uppercase','UPPERCASE'],['lowercase','lowercase'],['capitalize','Capitalize']
+    ])}
+    ${colorPicker('typoColor','文字顏色')}
+  `);
+}
+
+// ── Box Model tab controls ──
+function buildBoxControls() {
+  return section('盒子模型', '#82aaff', `
+    ${presets([
+      ['卡片', "applyPreset('boxCard')"],
+      ['按鈕', "applyPreset('boxButton')"],
+      ['標籤', "applyPreset('boxBadge')"],
+      ['輸入框', "applyPreset('boxInput')"],
+    ])}
+    ${colorPicker('boxBg','背景顏色')}
+    ${colorPicker('boxColor','文字顏色')}
+    ${slider('boxWidth','寬度 width',50,400,'px')}
+    ${slider('boxPaddingX','左右 padding',0,60,'px')}
+    ${slider('boxPaddingY','上下 padding',0,60,'px')}
+    ${slider('boxMargin','外距 margin',0,60,'px')}
+    ${slider('boxRadius','圓角 border-radius',0,50,'px')}
+    ${slider('boxShadow','陰影 box-shadow',0,30,'px')}
+  `) +
+  section('邊框 Border', '#f07178', `
+    ${slider('boxBorderWidth','邊框寬度',0,8,'px')}
+    ${dropdown('boxBorderStyle','邊框樣式', [
+      ['solid','solid（實線）'],['dashed','dashed（虛線）'],['dotted','dotted（點線）'],['double','double（雙線）']
+    ])}
+    ${colorPicker('boxBorderColor','邊框顏色')}
+  `);
+}
+
+// ── Flexbox tab controls ──
+function buildFlexControls() {
+  return section('Flexbox 容器', '#c792ea', `
+    ${presets([
+      ['水平置中', "applyPreset('flexCenter')"],
+      ['間距均分', "applyPreset('flexSpaceBetween')"],
+      ['垂直排列', "applyPreset('flexColumn')"],
+      ['自動換行', "applyPreset('flexWrap')"],
+    ])}
+    ${dropdown('flexDirection','方向 flex-direction', [
+      ['row','row（橫排）'],['row-reverse','row-reverse'],
+      ['column','column（直排）'],['column-reverse','column-reverse']
+    ])}
+    ${dropdown('flexJustify','主軸對齊 justify-content', [
+      ['flex-start','flex-start'],['center','center'],['flex-end','flex-end'],
+      ['space-between','space-between'],['space-around','space-around'],['space-evenly','space-evenly']
+    ])}
+    ${dropdown('flexAlign','交叉軸 align-items', [
+      ['flex-start','flex-start'],['center','center'],['flex-end','flex-end'],
+      ['stretch','stretch'],['baseline','baseline']
+    ])}
+    ${slider('flexGap','間距 gap',0,40,'px')}
+    ${slider('flexItemCount','子元素數量',1,8,'')}
+    <div class="ctrl-row">
+      <label>換行選項</label>
+      <div class="toggle-group">
+        ${toggleBtn('flexWrap','flex-wrap: wrap')}
+      </div>
+    </div>
+    ${colorPicker('flexBg','容器背景')}
+    ${colorPicker('flexItemBg','子元素顏色')}
+  `);
+}
+
+// ─────────────────────────────────────────
+// State management
+// ─────────────────────────────────────────
+function setState(key, value) {
+  state[key] = value;
+  // sync all inputs with same data-key
+  document.querySelectorAll(`[data-key="${key}"]`).forEach(el => {
+    if (el.type === 'range' || el.type === 'color' || el.tagName === 'SELECT') el.value = value;
+    else if (el.type === 'text') el.value = value;
+  });
+  // update labels
+  document.querySelectorAll(`[data-key="${key}"]`).forEach(el => {
+    if (el.type === 'range') {
+      const lbl = el.previousElementSibling?.querySelector('span');
+      if (lbl) lbl.textContent = value + (el.dataset.unit||'');
+    }
+  });
+  updateAll();
+}
+
+function toggleState(key) {
+  state[key] = !state[key];
+  renderControls();
+  updateAll();
+}
+
+function bindControls() {
+  // labels with spans for ranges
+  document.querySelectorAll('input[type=range]').forEach(el => {
+    const unit = el.dataset.unit || '';
+    const span = el.previousElementSibling?.querySelector('span');
+    if (span) span.textContent = el.value + unit;
+  });
+}
+
+// ─────────────────────────────────────────
+// Presets
+// ─────────────────────────────────────────
+const PRESETS = {
+  // HTML
+  htmlH1: { htmlTag:'h1', content:'大標題 Heading', htmlColor:'#1a1a2e', htmlBg:'#ffffff', fontSize:40, fontWeight:'700', fontFamily:'serif', textAlign:'center', italic:false, underline:false },
+  htmlBtn: { htmlTag:'button', content:'點擊我！', htmlColor:'#ffffff', htmlBg:'#6c8ef5', fontSize:16, fontWeight:'600', fontFamily:'sans-serif', textAlign:'center', italic:false, underline:false },
+  htmlCard: { htmlTag:'div', content:'這是一個卡片元素', htmlColor:'#333333', htmlBg:'#f5f7ff', fontSize:16, fontWeight:'400', fontFamily:'sans-serif', textAlign:'left', italic:false, underline:false },
+  htmlBadge: { htmlTag:'span', content:'NEW', htmlColor:'#ffffff', htmlBg:'#f06292', fontSize:11, fontWeight:'700', fontFamily:'sans-serif', textAlign:'center', italic:false, underline:false },
+  htmlLink: { htmlTag:'a', content:'點這裡了解更多 →', htmlColor:'#6c8ef5', htmlBg:'#ffffff', fontSize:16, fontWeight:'400', fontFamily:'sans-serif', textAlign:'left', italic:false, underline:true },
+  // Typography
+  typoBody: { typoFontSize:16, typoLineHeight:1.6, typoLetterSpacing:0, typoColor:'#333333', typoFontFamily:'sans-serif', typoFontWeight:'400', typoTextTransform:'none' },
+  typoHeading: { typoFontSize:36, typoLineHeight:1.2, typoLetterSpacing:-1, typoColor:'#1a1a2e', typoFontFamily:'serif', typoFontWeight:'700', typoTextTransform:'none' },
+  typoCaption: { typoFontSize:12, typoLineHeight:1.4, typoLetterSpacing:.5, typoColor:'#888888', typoFontFamily:'sans-serif', typoFontWeight:'400', typoTextTransform:'uppercase' },
+  typoCode: { typoFontSize:14, typoLineHeight:1.7, typoLetterSpacing:.3, typoColor:'#c3e88d', typoFontFamily:'monospace', typoFontWeight:'400', typoTextTransform:'none' },
+  // Box
+  boxCard: { boxBg:'#ffffff', boxColor:'#333333', boxPaddingX:24, boxPaddingY:20, boxMargin:0, boxBorderWidth:0, boxBorderColor:'#e0e0e0', boxBorderStyle:'solid', boxRadius:12, boxShadow:16, boxWidth:240 },
+  boxButton: { boxBg:'#6c8ef5', boxColor:'#ffffff', boxPaddingX:20, boxPaddingY:10, boxMargin:0, boxBorderWidth:0, boxBorderColor:'#5577dd', boxBorderStyle:'solid', boxRadius:8, boxShadow:4, boxWidth:140 },
+  boxBadge: { boxBg:'#f06292', boxColor:'#ffffff', boxPaddingX:10, boxPaddingY:4, boxMargin:0, boxBorderWidth:0, boxBorderColor:'#f06292', boxBorderStyle:'solid', boxRadius:20, boxShadow:0, boxWidth:80 },
+  boxInput: { boxBg:'#fafafa', boxColor:'#333333', boxPaddingX:12, boxPaddingY:8, boxMargin:0, boxBorderWidth:1, boxBorderColor:'#dddddd', boxBorderStyle:'solid', boxRadius:6, boxShadow:0, boxWidth:200 },
+  // Flexbox
+  flexCenter: { flexDirection:'row', flexJustify:'center', flexAlign:'center', flexGap:12, flexWrap:false, flexItemCount:3, flexItemBg:'#6c8ef5', flexBg:'#eef0ff' },
+  flexSpaceBetween: { flexDirection:'row', flexJustify:'space-between', flexAlign:'center', flexGap:12, flexWrap:false, flexItemCount:4, flexItemBg:'#f06292', flexBg:'#fff0f5' },
+  flexColumn: { flexDirection:'column', flexJustify:'flex-start', flexAlign:'center', flexGap:8, flexWrap:false, flexItemCount:4, flexItemBg:'#4caf87', flexBg:'#f0fff7' },
+  flexWrap_: { flexDirection:'row', flexJustify:'flex-start', flexAlign:'center', flexGap:8, flexWrap:true, flexItemCount:7, flexItemBg:'#f5c842', flexBg:'#fffbf0' },
+};
+
+function applyPreset(name) {
+  const p = PRESETS[name] || PRESETS[name.replace('_','')];
+  if (!p) return;
+  Object.assign(state, p);
+  renderControls();
+  updateAll();
+}
+
+// ─────────────────────────────────────────
+// Update all
+// ─────────────────────────────────────────
+function updateAll() {
+  if (currentTab === 'html') renderHtml();
+  else if (currentTab === 'typography') renderTypo();
+  else if (currentTab === 'box') renderBox();
+  else renderFlex();
+  updatePrompt();
+}
+
+// ─────────────────────────────────────────
+// Renderers
+// ─────────────────────────────────────────
+function renderHtml() {
+  const { htmlTag, content, htmlColor, htmlBg, fontSize, fontWeight, fontFamily, textAlign, italic, underline } = state;
+
+  const styleObj = {
+    color: htmlColor,
+    background: htmlBg,
+    'font-size': fontSize + 'px',
+    'font-weight': fontWeight,
+    'font-family': fontFamily,
+    'text-align': textAlign,
+    ...(italic ? {'font-style':'italic'} : {}),
+    ...(underline ? {'text-decoration':'underline'} : {}),
+    padding: '12px 20px',
+    'border-radius': '8px',
+    display: 'inline-block',
+  };
+
+  const styleStr = Object.entries(styleObj).map(([k,v]) => `${k}: ${v}`).join('; ');
+  const el = document.createElement(htmlTag);
+  el.style.cssText = styleStr;
+  el.textContent = content;
+  if (htmlTag === 'a') el.href = '#';
+
+  const stage = document.getElementById('preview-stage');
+  stage.innerHTML = '';
+  stage.appendChild(el);
+
+  // HTML code
+  const attrs = `style="${styleStr}"`;
+  const htmlSrc = `<${htmlTag}\n  ${attrs}>\n  ${escHtml(content)}\n</${htmlTag}>`;
+  document.getElementById('html-code').innerHTML = syntaxHtml(htmlSrc);
+
+  // CSS code
+  const className = htmlTag === 'h1'||htmlTag==='h2'||htmlTag==='h3' ? 'heading' : htmlTag === 'button' ? 'btn' : 'element';
+  const cssProps = Object.entries(styleObj).filter(([k]) => k!=='padding'&&k!=='border-radius'&&k!=='display');
+  const cssSrc = `.${className} {\n  color: ${htmlColor};\n  background: ${htmlBg};\n  font-size: ${fontSize}px;\n  font-weight: ${fontWeight};\n  font-family: ${fontFamily};\n  text-align: ${textAlign};\n  padding: 12px 20px;\n  border-radius: 8px;\n  display: inline-block;${italic?'\n  font-style: italic;':''}${underline?'\n  text-decoration: underline;':''}\n}`;
+  document.getElementById('css-code').innerHTML = syntaxCss(cssSrc);
+}
+
+function renderTypo() {
+  const { typoFontSize, typoLineHeight, typoLetterSpacing, typoColor, typoFontFamily, typoFontWeight, typoTextTransform } = state;
+  const stage = document.getElementById('preview-stage');
+  const sampleText = '網頁設計是結合藝術與技術的學科。\n好的排版讓閱讀更舒適、更有層次感。\nTypography matters in web design.';
+  stage.innerHTML = `<p style="
+    font-size:${typoFontSize}px;
+    line-height:${typoLineHeight};
+    letter-spacing:${typoLetterSpacing}px;
+    color:${typoColor};
+    font-family:${typoFontFamily};
+    font-weight:${typoFontWeight};
+    text-transform:${typoTextTransform};
+    max-width:500px;
+    text-align:left;
+    white-space:pre-line;
+  ">${sampleText}</p>`;
+
+  const htmlSrc = `<p class="styled-text">\n  ${escHtml(sampleText.split('\n')[0])}\n</p>`;
+  const cssSrc = `.styled-text {\n  font-size: ${typoFontSize}px;\n  line-height: ${typoLineHeight};\n  letter-spacing: ${typoLetterSpacing}px;\n  color: ${typoColor};\n  font-family: ${typoFontFamily};\n  font-weight: ${typoFontWeight};${typoTextTransform!=='none'?`\n  text-transform: ${typoTextTransform};`:''}\n}`;
+  document.getElementById('html-code').innerHTML = syntaxHtml(htmlSrc);
+  document.getElementById('css-code').innerHTML = syntaxCss(cssSrc);
+}
+
+function renderBox() {
+  const { boxBg, boxColor, boxPaddingX, boxPaddingY, boxMargin, boxBorderWidth, boxBorderColor, boxBorderStyle, boxRadius, boxShadow, boxWidth } = state;
+  const stage = document.getElementById('preview-stage');
+
+  const shadow = boxShadow > 0 ? `0 ${Math.round(boxShadow/2)}px ${boxShadow}px rgba(0,0,0,0.15)` : 'none';
+  const border = boxBorderWidth > 0 ? `${boxBorderWidth}px ${boxBorderStyle} ${boxBorderColor}` : 'none';
+
+  stage.innerHTML = `
+    <div style="
+      background:${boxBg};
+      color:${boxColor};
+      padding:${boxPaddingY}px ${boxPaddingX}px;
+      margin:${boxMargin}px;
+      border-radius:${boxRadius}px;
+      box-shadow:${shadow};
+      border:${border};
+      width:${boxWidth}px;
+      font-family:sans-serif;
+      font-size:15px;
+      text-align:center;
+    ">
+      <div style="font-size:11px;opacity:.6;margin-bottom:4px;">Padding: ${boxPaddingY}px ${boxPaddingX}px</div>
+      <div style="font-weight:600;">Box Model</div>
+      <div style="font-size:11px;opacity:.6;margin-top:4px;">Width: ${boxWidth}px</div>
+    </div>`;
+
+  const htmlSrc = `<div class="box">\n  Box Model\n</div>`;
+  const cssSrc = `.box {\n  background: ${boxBg};\n  color: ${boxColor};\n  width: ${boxWidth}px;\n  padding: ${boxPaddingY}px ${boxPaddingX}px;${boxMargin>0?`\n  margin: ${boxMargin}px;`:''}\n  border-radius: ${boxRadius}px;${boxBorderWidth>0?`\n  border: ${boxBorderWidth}px ${boxBorderStyle} ${boxBorderColor};`:''}\n  box-shadow: ${shadow};\n}`;
+  document.getElementById('html-code').innerHTML = syntaxHtml(htmlSrc);
+  document.getElementById('css-code').innerHTML = syntaxCss(cssSrc);
+}
+
+function renderFlex() {
+  const { flexBg, flexGap, flexDirection, flexJustify, flexAlign, flexWrap, flexItemCount, flexItemBg } = state;
+  const stage = document.getElementById('preview-stage');
+
+  const items = Array.from({length:flexItemCount}, (_,i) =>
+    `<div style="background:${flexItemBg};color:#fff;border-radius:6px;padding:10px 14px;font-family:sans-serif;font-size:13px;font-weight:600;min-width:44px;text-align:center;">${i+1}</div>`
+  ).join('');
+
+  stage.innerHTML = `
+    <div style="
+      display:flex;
+      flex-direction:${flexDirection};
+      justify-content:${flexJustify};
+      align-items:${flexAlign};
+      flex-wrap:${flexWrap?'wrap':'nowrap'};
+      gap:${flexGap}px;
+      background:${flexBg};
+      padding:20px;
+      border-radius:10px;
+      width:100%;
+      min-height:120px;
+    ">${items}</div>`;
+
+  const htmlSrc = `<div class="flex-container">\n  <div class="item">1</div>\n  <div class="item">2</div>\n  <div class="item">3</div>\n</div>`;
+  const cssSrc = `.flex-container {\n  display: flex;\n  flex-direction: ${flexDirection};\n  justify-content: ${flexJustify};\n  align-items: ${flexAlign};${flexWrap?'\n  flex-wrap: wrap;':''}\n  gap: ${flexGap}px;\n}\n\n.item {\n  background: ${flexItemBg};\n  padding: 10px 14px;\n  border-radius: 6px;\n  color: #fff;\n}`;
+  document.getElementById('html-code').innerHTML = syntaxHtml(htmlSrc);
+  document.getElementById('css-code').innerHTML = syntaxCss(cssSrc);
+}
+
+// ─────────────────────────────────────────
+// Prompt builder
+// ─────────────────────────────────────────
+function updatePrompt() {
+  const t = document.getElementById('prompt-text');
+  if (currentTab === 'html') {
+    const { htmlTag, content, fontSize, fontWeight, htmlColor, textAlign } = state;
+    t.textContent = `幫我建立一個 <${htmlTag}> 元素，內容為「${content}」，字體大小 ${fontSize}px，粗細 ${fontWeight}，文字顏色 ${htmlColor}，${textAlign === 'center' ? '文字置中' : '文字靠' + (textAlign==='left'?'左':'右')}。`;
+  } else if (currentTab === 'typography') {
+    const { typoFontSize, typoLineHeight, typoLetterSpacing, typoFontFamily } = state;
+    t.textContent = `設定文字樣式：font-size ${typoFontSize}px、line-height ${typoLineHeight}、letter-spacing ${typoLetterSpacing}px、font-family ${typoFontFamily}。`;
+  } else if (currentTab === 'box') {
+    const { boxRadius, boxShadow, boxPaddingX, boxPaddingY, boxWidth, boxBg } = state;
+    t.textContent = `建立一個寬 ${boxWidth}px 的盒子，背景 ${boxBg}，padding ${boxPaddingY}px ${boxPaddingX}px，圓角 ${boxRadius}px${boxShadow>0?`，並加上 box-shadow blur ${boxShadow}px`:''}。`;
+  } else {
+    const { flexDirection, flexJustify, flexAlign, flexGap, flexWrap } = state;
+    t.textContent = `Flexbox 容器設定：flex-direction ${flexDirection}、justify-content ${flexJustify}、align-items ${flexAlign}、gap ${flexGap}px${flexWrap?'、flex-wrap wrap':''}。`;
+  }
+}
+
+// ─────────────────────────────────────────
+// Syntax highlight (simple)
+// ─────────────────────────────────────────
+function syntaxHtml(code) {
+  return escHtml(code)
+    .replace(/&lt;(\/?[\w]+)/g, '&lt;<span class="hl-tag">$1</span>')
+    .replace(/(\w+)=&quot;/g, '<span class="hl-attr">$1</span>=&quot;')
+    .replace(/&quot;([^&]*)&quot;/g, '&quot;<span class="hl-val">$1</span>&quot;');
+}
+
+function syntaxCss(code) {
+  return escHtml(code)
+    .replace(/^(\.[^\s{]+)/gm, '<span class="hl-sel">$1</span>')
+    .replace(/([\w-]+):/g, '<span class="hl-prop">$1</span>:')
+    .replace(/:\s*([^;\n}]+)/g, ': <span class="hl-pval">$1</span>');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─────────────────────────────────────────
+// Copy
+// ─────────────────────────────────────────
+function copyPrompt() {
+  const html = document.getElementById('html-code').textContent;
+  const css = document.getElementById('css-code').textContent;
+  const text = `/* HTML */\n${html}\n\n/* CSS */\n${css}`;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '複製程式碼'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+// ─────────────────────────────────────────
+// Background toggle
+// ─────────────────────────────────────────
+function setBg(mode) {
+  const s = document.getElementById('preview-stage');
+  s.className = mode === 'dark' ? 'dark-bg' : mode === 'pattern' ? 'pattern-bg' : '';
+}
+
+// ─────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────
+renderControls();
+updateAll();
+</script>
+</body>
+</html>

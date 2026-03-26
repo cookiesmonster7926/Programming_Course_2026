@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Immersive Gallery{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="https://unpkg.com/feather-icons"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    
+    {% block content %}
+    {% endblock %}
+
+    {% if is_api_page %}
+    <!-- Floating Back Button -->
+    <a href="index.html" class="back-btn" style="position: fixed; z-index: 9999;">
+        <i data-feather="arrow-left" style="width: 16px; height: 16px;"></i> Gallery
+    </a>
+
+    <!-- Floating Developer Toggle -->
+    <button class="dev-toggle-btn" onclick="toggleJson()" style="position: fixed; z-index: 9999;">
+        <i data-feather="code" style="width: 16px; height: 16px;"></i>
+        <span>View Source Data</span>
+    </button>
+
+    <!-- JSON Overlay Modal -->
+    <div class="json-overlay" id="jsonOverlay" onclick="closeJson(event)">
+        <div class="json-container" onclick="event.stopPropagation()">
+            <div class="json-header">
+                <div class="dots">
+                    <div class="dot r" onclick="toggleJson()" style="cursor: pointer;"></div>
+                    <div class="dot y"></div>
+                    <div class="dot g"></div>
+                </div>
+                <span>raw_response.json</span>
+            </div>
+            <div class="json-body">
+                <pre>{{ json_str }}</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleJson() {
+            document.getElementById('jsonOverlay').classList.toggle('active');
+        }
+        function closeJson(event) {
+            document.getElementById('jsonOverlay').classList.remove('active');
+        }
+    </script>
+    {% endif %}
+
+    <script>
+        feather.replace();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
