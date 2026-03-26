@@ -195,6 +195,77 @@
 
 <script>
 // ──────────────────────────────────────────────
+//  3D Carousel  (Gemini design × Claude patch)
+// ──────────────────────────────────────────────
+let _current = 0;
+
+function initCarousel() {
+    const grid = document.querySelector('.card-grid');
+    if (!grid) return;
+
+    const nav = document.createElement('div');
+    nav.className = 'carousel-nav';
+    nav.innerHTML = `
+        <button class="carousel-btn" id="c-prev" aria-label="上一個">&#8249;</button>
+        <button class="carousel-btn" id="c-next" aria-label="下一個">&#8250;</button>`;
+    grid.appendChild(nav);
+    document.getElementById('c-prev').onclick = carouselPrev;
+    document.getElementById('c-next').onclick = carouselNext;
+
+    const dotsWrap = document.createElement('div');
+    dotsWrap.className = 'carousel-dots';
+    document.querySelectorAll('.acard').forEach((_, i) => {
+        const d = document.createElement('button');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        d.onclick = () => carouselGoto(i);
+        dotsWrap.appendChild(d);
+    });
+    grid.after(dotsWrap);
+
+    document.querySelectorAll('.acard').forEach(card => {
+        card.addEventListener('click', () => {
+            if (card.classList.contains('carousel-prev')) carouselPrev();
+            else if (card.classList.contains('carousel-next')) carouselNext();
+        });
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft')  carouselPrev();
+        if (e.key === 'ArrowRight') carouselNext();
+    });
+
+    carouselUpdate();
+}
+
+function carouselUpdate() {
+    const cards = Array.from(document.querySelectorAll('.acard'));
+    const n = cards.length;
+    const prevIdx = (_current - 1 + n) % n;
+    const nextIdx = (_current + 1) % n;
+
+    cards.forEach((card, i) => {
+        card.classList.remove('carousel-active','carousel-prev','carousel-next','carousel-hidden');
+        if      (i === _current) card.classList.add('carousel-active');
+        else if (i === prevIdx)  card.classList.add('carousel-prev');
+        else if (i === nextIdx)  card.classList.add('carousel-next');
+        else                     card.classList.add('carousel-hidden');
+    });
+
+    document.querySelectorAll('.dot').forEach((d, i) =>
+        d.classList.toggle('active', i === _current));
+}
+
+function carouselNext() {
+    _current = (_current + 1) % document.querySelectorAll('.acard').length;
+    carouselUpdate();
+}
+function carouselPrev() {
+    _current = (_current - 1 + document.querySelectorAll('.acard').length) % document.querySelectorAll('.acard').length;
+    carouselUpdate();
+}
+function carouselGoto(i) { _current = i; carouselUpdate(); }
+
+// ──────────────────────────────────────────────
 //  API 抓取（AJAX，不跳頁）
 // ──────────────────────────────────────────────
 async function doFetch(ep, source) {
@@ -260,7 +331,7 @@ function updatePreview(source, data) {
 // ──────────────────────────────────────────────
 //  Live Feed
 // ──────────────────────────────────────────────
-const COLORS = { PokeAPI:'#cd2834', GitHub:'#3fb27f', Weather:'#38bdf8', RandomUser:'#a78bfa' };
+const COLORS = { PokeAPI:'#ff4d52', GitHub:'#3ecf8e', Weather:'#38bdf8', RandomUser:'#a78bfa' };
 
 function addFeedItem(data) {
     const body = document.getElementById('feed-body');
@@ -341,6 +412,8 @@ function toast(msg, type) {
     clearTimeout(_toastTimer);
     _toastTimer = setTimeout(() => el.classList.remove('toast-in'), 3200);
 }
+
+document.addEventListener('DOMContentLoaded', initCarousel);
 </script>
 </body>
 </html>
