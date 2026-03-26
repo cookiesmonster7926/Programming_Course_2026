@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Gallery Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ===== 頁首 ===== -->
+<header class="site-header">
+    <div class="header-inner">
+        <div>
+            <h1 class="site-title">API Gallery Hub</h1>
+            <p class="site-sub">
+                <span class="badge badge-w4">Week 04</span> HTML/CSS + API
+                <span class="connector">×</span>
+                <span class="badge badge-w5">Week 05</span> Flask + SQLite
+            </p>
+        </div>
+        <nav class="header-nav">
+            <a href="/view" class="nav-btn">🗄 查看資料庫</a>
+            <a href="/api/data" target="_blank" class="nav-btn nav-btn-outline">{ } JSON</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ===== 說明區塊 ===== -->
+<section class="explainer">
+    <div class="explainer-inner">
+        <div class="explainer-col">
+            <span class="exp-label">Week 04 做法</span>
+            <p>跑一次 Python script → 把資料寫進 <code>.html</code> 檔 → 部署到 GitHub Pages</p>
+        </div>
+        <div class="explainer-arrow">→</div>
+        <div class="explainer-col highlight">
+            <span class="exp-label">Week 05 升級版</span>
+            <p>按一顆按鈕 → Flask route 即時抓 API → 存進 <code>SQLite</code> → 同學用你的 IP 就能讀</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== API 卡片 Bento Grid ===== -->
+<main class="bento-grid">
+
+    <!-- PokeAPI -->
+    <div class="api-card card-poke">
+        <div class="card-top">
+            <span class="card-emoji">🎮</span>
+            <span class="source-count">已抓 <strong>{{ counts.get('PokeAPI', 0) }}</strong> 筆</span>
+        </div>
+        <h2 class="card-title">PokeAPI</h2>
+        <p class="card-desc">每次抓一隻隨機寶可夢（第一世代 #001–#151），包含類型、身高、體重。</p>
+        <div class="card-url">pokeapi.co/api/v2/pokemon/{id}</div>
+        <a href="/fetch/poke" class="card-btn">▶ 抓取寶可夢</a>
+    </div>
+
+    <!-- GitHub -->
+    <div class="api-card card-github">
+        <div class="card-top">
+            <span class="card-emoji">🐧</span>
+            <span class="source-count">已抓 <strong>{{ counts.get('GitHub', 0) }}</strong> 筆</span>
+        </div>
+        <h2 class="card-title">GitHub API</h2>
+        <p class="card-desc">抓取 Linux 之父 Linus Torvalds 的 GitHub 公開資料：簡介、repo 數、追蹤者。</p>
+        <div class="card-url">api.github.com/users/torvalds</div>
+        <a href="/fetch/github" class="card-btn">▶ 抓取 GitHub</a>
+    </div>
+
+    <!-- Weather -->
+    <div class="api-card card-weather">
+        <div class="card-top">
+            <span class="card-emoji">🌤</span>
+            <span class="source-count">已抓 <strong>{{ counts.get('Weather', 0) }}</strong> 筆</span>
+        </div>
+        <h2 class="card-title">Open-Meteo 天氣</h2>
+        <p class="card-desc">不需要 API Key！抓取台中市即時天氣：氣溫、天況、風速。</p>
+        <div class="card-url">api.open-meteo.com/v1/forecast</div>
+        <a href="/fetch/weather" class="card-btn">▶ 抓取天氣</a>
+    </div>
+
+    <!-- RandomUser -->
+    <div class="api-card card-user">
+        <div class="card-top">
+            <span class="card-emoji">👤</span>
+            <span class="source-count">已抓 <strong>{{ counts.get('RandomUser', 0) }}</strong> 筆</span>
+        </div>
+        <h2 class="card-title">RandomUser</h2>
+        <p class="card-desc">每次產生一個隨機假用戶，包含姓名、Email、所在城市。這就是爬蟲會遇到的「結構化資料」格式。</p>
+        <div class="card-url">randomuser.me/api/</div>
+        <a href="/fetch/user" class="card-btn">▶ 抓取用戶</a>
+    </div>
+
+</main>
+
+<!-- ===== 總筆數條 ===== -->
+<div class="total-bar">
+    <span>資料庫目前共有</span>
+    <strong class="total-num">{{ counts.values() | sum }}</strong>
+    <span>筆資料 — <a href="/view">查看全部 →</a></span>
+</div>
+
+<!-- ===== 頁尾 ===== -->
+<footer class="site-footer">
+    程式設計實習 2026 · 逢甲大學 ·
+    你的 JSON API：<code>http://你的IP:5002/api/data</code>
+</footer>
+
+</body>
+</html>

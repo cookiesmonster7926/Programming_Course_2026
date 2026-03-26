@@ -1,0 +1,421 @@
+/* =============================================================================
+   API Gallery Hub — 全站樣式
+   Week04 × Week05 火力展示版
+   設計：暗色主題，承接 Week04 的畫廊風格，加入 Flask 互動元素
+   ============================================================================= */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --bg:      #000;
+    --surface: #111;
+    --border:  #222;
+    --text:    #e8e8e8;
+    --muted:   #666;
+
+    /* API 色彩識別系統 */
+    --poke:    #cd2834;   /* 寶可夢紅 */
+    --github:  #4caf87;   /* 綠 */
+    --weather: #0ea5e9;   /* 天藍 */
+    --user:    #a78bfa;   /* 紫 */
+
+    --radius: 16px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+a { color: inherit; text-decoration: none; }
+code {
+    font-family: "Fira Code", monospace;
+    font-size: .85em;
+    background: #1a1a1a;
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: #a78bfa;
+}
+
+/* =============================================================================
+   頁首
+   ============================================================================= */
+.site-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.site-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -.5px;
+}
+
+.site-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.badge-w4 { background: #1a1a3e; color: #6c8ef5; border: 1px solid #2e3250; }
+.badge-w5 { background: #1a2e1a; color: #4caf87; border: 1px solid #1a4a1a; }
+.connector { color: #444; font-size: 14px; }
+
+.header-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.nav-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: #1a1a1a;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    transition: all .15s;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.nav-btn:hover {
+    background: #222;
+    border-color: #444;
+    transform: translateY(-1px);
+}
+
+.nav-btn-outline {
+    background: transparent;
+    color: var(--muted);
+}
+
+.nav-btn-outline:hover {
+    color: var(--text);
+    border-color: #444;
+}
+
+/* =============================================================================
+   說明區塊
+   ============================================================================= */
+.explainer {
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    background: #080808;
+}
+
+.explainer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.explainer-col {
+    flex: 1;
+    min-width: 240px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.explainer-col.highlight { color: #aaa; }
+
+.explainer-col p { margin-top: 4px; line-height: 1.5; }
+
+.exp-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: #555;
+    display: block;
+}
+
+.explainer-arrow {
+    font-size: 24px;
+    color: #333;
+    flex-shrink: 0;
+}
+
+/* =============================================================================
+   Bento Grid（首頁 API 卡片）
+   ============================================================================= */
+.bento-grid {
+    max-width: 1100px;
+    margin: 32px auto;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.api-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.api-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .2s;
+}
+
+.api-card:hover { transform: translateY(-4px); }
+
+/* 每個 API 的頂部色條 */
+.card-poke   { border-top: 3px solid var(--poke);    }
+.card-github { border-top: 3px solid var(--github);  }
+.card-weather{ border-top: 3px solid var(--weather); }
+.card-user   { border-top: 3px solid var(--user);    }
+
+.card-poke:hover    { box-shadow: 0 8px 32px rgba(205, 40, 52, .15); }
+.card-github:hover  { box-shadow: 0 8px 32px rgba(76, 175, 135, .15); }
+.card-weather:hover { box-shadow: 0 8px 32px rgba(14, 165, 233, .15); }
+.card-user:hover    { box-shadow: 0 8px 32px rgba(167, 139, 250, .15); }
+
+.card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-emoji { font-size: 28px; }
+
+.source-count {
+    font-size: 11px;
+    color: var(--muted);
+    background: #1a1a1a;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+
+.source-count strong { color: var(--text); }
+
+.card-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    flex: 1;
+}
+
+.card-url {
+    font-family: "Fira Code", monospace;
+    font-size: 10px;
+    color: #444;
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 6px;
+    word-break: break-all;
+}
+
+.card-btn {
+    display: block;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    transition: all .15s;
+    color: #fff;
+}
+
+.card-poke    .card-btn { background: var(--poke); }
+.card-github  .card-btn { background: var(--github); }
+.card-weather .card-btn { background: var(--weather); }
+.card-user    .card-btn { background: var(--user); }
+
+.card-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+/* =============================================================================
+   總筆數條
+   ============================================================================= */
+.total-bar {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    padding: 0 32px;
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.total-num {
+    font-size: 20px;
+    font-weight: 900;
+    color: #fff;
+}
+
+.total-bar a { color: #6c8ef5; }
+.total-bar a:hover { text-decoration: underline; }
+
+/* =============================================================================
+   Tab 篩選條（view 頁）
+   ============================================================================= */
+.tab-bar {
+    max-width: 1100px;
+    margin: 24px auto 20px;
+    padding: 0 32px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #111;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    transition: all .15s;
+}
+
+.tab:hover { border-color: #444; color: var(--text); }
+.tab-active { background: #1a1a1a; color: var(--text); border-color: #444; }
+
+/* =============================================================================
+   資料卡片（view 頁）
+   ============================================================================= */
+.cards-area {
+    max-width: 1100px;
+    margin: 0 auto 60px;
+    padding: 0 32px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.data-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color .2s;
+}
+
+/* 左邊框顏色識別 */
+.border-pokeapi { border-left: 3px solid var(--poke); }
+.border-github  { border-left: 3px solid var(--github); }
+.border-weather { border-left: 3px solid var(--weather); }
+.border-user    { border-left: 3px solid var(--user); }
+
+.data-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.source-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid;
+}
+
+.tag-pokeapi { color: var(--poke);    border-color: var(--poke);    background: rgba(205,40,52,.08); }
+.tag-github  { color: var(--github);  border-color: var(--github);  background: rgba(76,175,135,.08); }
+.tag-weather { color: var(--weather); border-color: var(--weather); background: rgba(14,165,233,.08); }
+.tag-user    { color: var(--user);    border-color: var(--user);    background: rgba(167,139,250,.08); }
+
+.data-id { font-size: 11px; color: var(--muted); font-family: monospace; }
+
+.data-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.4;
+}
+
+.data-content {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.data-time {
+    font-size: 10px;
+    color: #333;
+    margin-top: 4px;
+    font-family: monospace;
+}
+
+/* =============================================================================
+   空狀態
+   ============================================================================= */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.empty-icon { font-size: 56px; }
+.empty-state h2 { font-size: 1.2rem; color: #fff; }
+.empty-state p { font-size: 13px; color: var(--muted); }
+
+/* =============================================================================
+   頁尾
+   ============================================================================= */
+.site-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: #2a2a2a;
+    border-top: 1px solid var(--border);
+}

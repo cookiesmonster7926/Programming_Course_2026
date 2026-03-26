@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料庫內容 · API Gallery Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ===== 頁首 ===== -->
+<header class="site-header">
+    <div class="header-inner">
+        <div>
+            <h1 class="site-title">🗄 資料庫內容</h1>
+            <p class="site-sub">api_gallery 資料表 · 共 {{ posts|length }} 筆
+                {% if active_source %} · 篩選：{{ active_source }}{% endif %}
+            </p>
+        </div>
+        <nav class="header-nav">
+            <a href="/" class="nav-btn">← 回首頁</a>
+            <a href="/api/data{% if active_source %}?source={{ active_source }}{% endif %}"
+               target="_blank" class="nav-btn nav-btn-outline">{ } JSON</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ===== 來源篩選 Tab ===== -->
+<div class="tab-bar">
+    <a href="/view" class="tab {% if not active_source %}tab-active{% endif %}">全部</a>
+    {% for src in sources %}
+    <a href="/view?source={{ src }}"
+       class="tab tab-{{ src | lower }} {% if active_source == src %}tab-active{% endif %}">
+        {% if src == 'PokeAPI' %}🎮{% elif src == 'GitHub' %}🐧{% elif src == 'Weather' %}🌤{% else %}👤{% endif %}
+        {{ src }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- ===== 卡片列表 ===== -->
+<main class="cards-area">
+
+    {% if posts %}
+    <div class="card-grid">
+        {% for post in posts %}
+        <div class="data-card border-{{ post.source | lower | replace('randomuser', 'user') }}">
+            <div class="data-card-header">
+                <span class="source-tag tag-{{ post.source | lower | replace('randomuser', 'user') }}">
+                    {% if post.source == 'PokeAPI' %}🎮
+                    {% elif post.source == 'GitHub' %}🐧
+                    {% elif post.source == 'Weather' %}🌤
+                    {% else %}👤{% endif %}
+                    {{ post.source }}
+                </span>
+                <span class="data-id"># {{ post.id }}</span>
+            </div>
+            <h3 class="data-title">{{ post.title }}</h3>
+            <p class="data-content">{{ post.content }}</p>
+            <div class="data-time">{{ post.fetched_at }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h2>還沒有資料</h2>
+        <p>{% if active_source %}{{ active_source }} 還沒有任何紀錄。{% else %}回到首頁按按鈕抓資料吧！{% endif %}</p>
+        <a href="/" class="nav-btn" style="margin-top:12px">← 回首頁</a>
+    </div>
+    {% endif %}
+
+</main>
+
+<footer class="site-footer">
+    程式設計實習 2026 · 逢甲大學 · 資料儲存於本機 gallery.db
+</footer>
+
+</body>
+</html>
