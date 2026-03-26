@@ -21,13 +21,18 @@
     </div>
 </header>
 
-<div class="app-body">
+<!-- ===== Hero: Carousel ===== -->
+<section class="hero-section">
+<div class="hero-inner">
 
-    <!-- ── 左側主內容 ── -->
-    <div class="content-left">
+    <div class="hero-text">
+        <div class="hero-eyebrow">Week 05 · Flask + SQLite</div>
+        <h1 class="hero-title">API Gallery Hub</h1>
+        <p class="hero-sub">四個公開 API，點擊按鈕即時抓取，自動存進本機資料庫</p>
+    </div>
 
-        <!-- API 卡片 2×2 -->
-        <div class="card-grid">
+    <!-- API 卡片 Carousel -->
+    <div class="card-grid">
 
             <!-- PokeAPI -->
             <div class="acard acard-poke" id="card-PokeAPI">
@@ -141,10 +146,16 @@
                 </div>
             </div>
 
-        </div><!-- /card-grid -->
+    </div><!-- /card-grid -->
 
-        <!-- ── Peer Connect ── -->
-        <div class="peer-section">
+</div><!-- /hero-inner -->
+</section><!-- /hero-section -->
+
+<!-- ===== Below Fold ===== -->
+<div class="app-body">
+
+    <!-- ── Peer Connect ── -->
+    <div class="peer-section">
             <div class="peer-header">
                 <span class="peer-icon">🔗</span>
                 <div>
@@ -175,9 +186,8 @@
             </div>
         </div>
 
-    </div><!-- /content-left -->
 
-    <!-- ── 右側 Live Feed ── -->
+    <!-- ── Live Feed ── -->
     <aside class="feed-panel">
         <div class="feed-head">
             <span class="feed-live-dot"></span>

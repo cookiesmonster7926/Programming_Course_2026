@@ -99,18 +99,47 @@ img[src=""], img:not([src]) { display: none !important; }
 }
 
 /* ══════════════════════════════════════════════
-   LAYOUT
+   HERO SECTION  (全幅 Carousel 區)
+   ══════════════════════════════════════════════ */
+.hero-section {
+    padding: 48px 0 0;
+    border-bottom: 1px solid var(--border);
+}
+.hero-inner {
+    max-width: 1100px; margin: 0 auto; padding: 0 32px;
+}
+.hero-text { text-align: center; margin-bottom: 40px; }
+
+.hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--user);
+    background: rgba(var(--user-rgb),.1);
+    border: 1px solid rgba(var(--user-rgb),.2);
+    padding: 4px 14px; border-radius: 20px; margin-bottom: 14px;
+}
+.hero-title {
+    font-size: clamp(30px, 4vw, 54px); font-weight: 900;
+    letter-spacing: -.04em; line-height: 1.08; margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 35%, rgba(167,139,250,.85) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+    font-size: 14px; color: var(--sub); line-height: 1.7;
+    max-width: 440px; margin: 0 auto;
+}
+
+/* ══════════════════════════════════════════════
+   LAYOUT  (Peer Connect + Live Feed 雙欄)
    ══════════════════════════════════════════════ */
 .app-body {
-    flex: 1; max-width: 1200px; width: 100%;
-    margin: 0 auto; padding: 40px 24px;
+    max-width: 1100px; width: 100%;
+    margin: 0 auto; padding: 32px 32px 60px;
     display: grid;
-    grid-template-columns: 1fr 280px;
+    grid-template-columns: 1fr 360px;
     gap: 28px; align-items: start;
 }
 @media (max-width: 1024px) { .app-body { grid-template-columns: 1fr; } }
-
-.content-left { min-width: 0; display: flex; flex-direction: column; gap: 24px; }
 
 /* ══════════════════════════════════════════════
    3D CAROUSEL  (Gemini design, Claude-patched)
@@ -120,10 +149,10 @@ img[src=""], img:not([src]) { display: none !important; }
     justify-content: center;
     align-items: center;
     perspective: 1200px;
-    height: 500px;
+    height: 480px;
     position: relative;
     overflow: visible;
-    margin-bottom: 52px;
+    margin-bottom: 0;
 }
 
 .acard {
@@ -279,7 +308,7 @@ img[src=""], img:not([src]) { display: none !important; }
 /* Dots */
 .carousel-dots {
     display: flex; justify-content: center;
-    gap: 10px; margin-bottom: 32px; margin-top: -40px;
+    gap: 10px; padding: 24px 0 32px; margin: 0;
 }
 .dot {
     width: 8px; height: 8px; border-radius: 50%;
@@ -420,8 +449,8 @@ img[src=""], img:not([src]) { display: none !important; }
 
 /* Stats strip */
 .view-stats {
-    max-width: 1200px; margin: 32px auto 0;
-    padding: 0 24px;
+    max-width: 1300px; margin: 32px auto 0;
+    padding: 0 28px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
@@ -458,8 +487,8 @@ img[src=""], img:not([src]) { display: none !important; }
 
 /* Tab bar */
 .tab-bar {
-    max-width: 1200px; margin: 20px auto 0;
-    padding: 0 24px; display: flex; gap: 6px; flex-wrap: wrap;
+    max-width: 1300px; margin: 20px auto 0;
+    padding: 0 28px; display: flex; gap: 6px; flex-wrap: wrap;
 }
 .tab {
     padding: 6px 14px; border-radius: var(--rs);
@@ -472,13 +501,15 @@ img[src=""], img:not([src]) { display: none !important; }
 .tab-active { background: rgba(167,139,250,.15); color: var(--user); border-color: rgba(var(--user-rgb),.35); font-weight: 600; }
 
 /* Cards grid */
-.cards-area { max-width: 1200px; margin: 20px auto 60px; padding: 0 24px; }
+.cards-area { max-width: 1300px; margin: 20px auto 60px; padding: 0 28px; }
 
 .card-grid-view {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 14px;
 }
+@media (max-width: 860px) { .card-grid-view { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .card-grid-view { grid-template-columns: 1fr; } }
 
 /* Data card — top accent strip design */
 .data-card {
