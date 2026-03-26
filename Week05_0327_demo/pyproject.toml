@@ -1,0 +1,9 @@
+[project]
+name = "week05-flask-data-hub"
+version = "0.1.0"
+description = "Flask Data Collector Hub — Week 05 教學範例"
+requires-python = ">=3.11"
+dependencies = [
+    "flask",
+    "requests",
+]
