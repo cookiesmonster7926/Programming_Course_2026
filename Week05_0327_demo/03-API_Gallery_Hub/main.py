@@ -278,11 +278,16 @@ def view():
         rows = conn.execute(
             "SELECT * FROM api_gallery ORDER BY id DESC"
         ).fetchall()
+    count_rows = conn.execute(
+        "SELECT source, COUNT(*) as cnt FROM api_gallery GROUP BY source"
+    ).fetchall()
     conn.close()
 
     posts = [dict(row) for row in rows]
+    counts = {row["source"]: row["cnt"] for row in count_rows}
     sources = ["PokeAPI", "GitHub", "Weather", "RandomUser"]
-    return render_template("view.html", posts=posts, active_source=source_filter, sources=sources)
+    return render_template("view.html", posts=posts, active_source=source_filter,
+                           sources=sources, counts=counts)
 
 
 @app.route("/api/data")

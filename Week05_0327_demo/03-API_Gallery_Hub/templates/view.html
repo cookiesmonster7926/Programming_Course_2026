@@ -23,12 +23,28 @@
     </div>
 </header>
 
+<!-- ===== Stats 總覽 ===== -->
+{% if not active_source %}
+<div class="view-stats">
+    {% set stat_items = [('PokeAPI','🎮','poke'), ('GitHub','🐧','github'), ('Weather','🌤','weather'), ('RandomUser','👤','user')] %}
+    {% for name, icon, cls in stat_items %}
+    <a href="/view?source={{ name }}" class="stat-chip stat-chip-{{ cls }}">
+        <div class="stat-icon">{{ icon }}</div>
+        <div>
+            <div class="stat-num">{{ counts.get(name, 0) }}</div>
+            <div class="stat-src">{{ name }}</div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+
 <!-- ===== 來源篩選 Tab ===== -->
 <div class="tab-bar">
     <a href="/view" class="tab {% if not active_source %}tab-active{% endif %}">全部</a>
     {% for src in sources %}
     <a href="/view?source={{ src }}"
-       class="tab tab-{{ src | lower }} {% if active_source == src %}tab-active{% endif %}">
+       class="tab {% if active_source == src %}tab-active{% endif %}">
         {% if src == 'PokeAPI' %}🎮{% elif src == 'GitHub' %}🐧{% elif src == 'Weather' %}🌤{% else %}👤{% endif %}
         {{ src }}
     </a>
@@ -41,20 +57,24 @@
     {% if posts %}
     <div class="card-grid-view">
         {% for post in posts %}
-        <div class="data-card border-{{ post.source | lower | replace('randomuser', 'user') }}">
-            <div class="data-card-header">
-                <span class="source-tag tag-{{ post.source | lower | replace('randomuser', 'user') }}">
-                    {% if post.source == 'PokeAPI' %}🎮
-                    {% elif post.source == 'GitHub' %}🐧
-                    {% elif post.source == 'Weather' %}🌤
-                    {% else %}👤{% endif %}
-                    {{ post.source }}
-                </span>
-                <span class="data-id"># {{ post.id }}</span>
+        {% set src_cls = post.source | lower | replace('randomuser', 'user') %}
+        <div class="data-card border-{{ src_cls }}">
+            <div class="dc-accent"></div>
+            <div class="dc-inner">
+                <div class="data-card-header">
+                    <span class="source-tag tag-{{ src_cls }}">
+                        {% if post.source == 'PokeAPI' %}🎮
+                        {% elif post.source == 'GitHub' %}🐧
+                        {% elif post.source == 'Weather' %}🌤
+                        {% else %}👤{% endif %}
+                        {{ post.source }}
+                    </span>
+                    <span class="data-id"># {{ post.id }}</span>
+                </div>
+                <h3 class="data-title">{{ post.title }}</h3>
+                <p class="data-content">{{ post.content }}</p>
+                <div class="data-time">{{ post.fetched_at }}</div>
             </div>
-            <h3 class="data-title">{{ post.title }}</h3>
-            <p class="data-content">{{ post.content }}</p>
-            <div class="data-time">{{ post.fetched_at }}</div>
         </div>
         {% endfor %}
     </div>
@@ -64,7 +84,7 @@
         <div class="empty-icon">📭</div>
         <h2>還沒有資料</h2>
         <p>{% if active_source %}{{ active_source }} 還沒有任何紀錄。{% else %}回到首頁按按鈕抓資料吧！{% endif %}</p>
-        <a href="/" class="nav-btn" style="margin-top:12px">← 回首頁</a>
+        <a href="/" class="nav-pill" style="margin-top:12px">← 回首頁</a>
     </div>
     {% endif %}
 

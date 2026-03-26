@@ -105,10 +105,12 @@ img[src=""], img:not([src]) { display: none !important; }
     flex: 1; max-width: 1200px; width: 100%;
     margin: 0 auto; padding: 40px 24px;
     display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 32px; align-items: start;
+    grid-template-columns: 1fr 280px;
+    gap: 28px; align-items: start;
 }
 @media (max-width: 1024px) { .app-body { grid-template-columns: 1fr; } }
+
+.content-left { min-width: 0; display: flex; flex-direction: column; gap: 24px; }
 
 /* ══════════════════════════════════════════════
    3D CAROUSEL  (Gemini design, Claude-patched)
@@ -415,55 +417,107 @@ img[src=""], img:not([src]) { display: none !important; }
 /* ══════════════════════════════════════════════
    /view PAGE
    ══════════════════════════════════════════════ */
+
+/* Stats strip */
+.view-stats {
+    max-width: 1200px; margin: 32px auto 0;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+@media (max-width: 700px) { .view-stats { grid-template-columns: repeat(2, 1fr); } }
+
+.stat-chip {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: var(--rm); padding: 16px 18px;
+    display: flex; align-items: center; gap: 14px;
+    text-decoration: none; transition: all .2s var(--ease);
+    border-top-width: 2px;
+}
+.stat-chip:hover { background: var(--card2); transform: translateY(-2px); }
+.stat-chip-poke    { border-top-color: var(--poke); }
+.stat-chip-github  { border-top-color: var(--github); }
+.stat-chip-weather { border-top-color: var(--weather); }
+.stat-chip-user    { border-top-color: var(--user); }
+.stat-chip-poke:hover    { box-shadow: 0 8px 28px rgba(var(--poke-rgb),.12); }
+.stat-chip-github:hover  { box-shadow: 0 8px 28px rgba(var(--github-rgb),.12); }
+.stat-chip-weather:hover { box-shadow: 0 8px 28px rgba(var(--weather-rgb),.12); }
+.stat-chip-user:hover    { box-shadow: 0 8px 28px rgba(var(--user-rgb),.12); }
+
+.stat-icon { font-size: 22px; flex-shrink: 0; }
+.stat-num  {
+    font-size: 30px; font-weight: 900; line-height: 1;
+    letter-spacing: -.05em; font-variant-numeric: tabular-nums;
+}
+.stat-chip-poke    .stat-num { color: var(--poke); }
+.stat-chip-github  .stat-num { color: var(--github); }
+.stat-chip-weather .stat-num { color: var(--weather); }
+.stat-chip-user    .stat-num { color: var(--user); }
+.stat-src  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--sub); margin-top: 3px; }
+
+/* Tab bar */
 .tab-bar {
-    max-width: 1200px; margin: 36px auto 20px;
-    padding: 0 24px; display: flex; gap: 8px; flex-wrap: wrap;
+    max-width: 1200px; margin: 20px auto 0;
+    padding: 0 24px; display: flex; gap: 6px; flex-wrap: wrap;
 }
 .tab {
-    padding: 7px 16px; border-radius: var(--rs);
+    padding: 6px 14px; border-radius: var(--rs);
     font-size: 13px; font-weight: 500;
     color: var(--sub); border: 1px solid var(--border);
     cursor: pointer; transition: all .15s var(--ease);
+    text-decoration: none;
 }
 .tab:hover { color: var(--text); background: rgba(255,255,255,.05); }
 .tab-active { background: rgba(167,139,250,.15); color: var(--user); border-color: rgba(var(--user-rgb),.35); font-weight: 600; }
 
-.cards-area { max-width: 1200px; margin: 0 auto 60px; padding: 0 24px; }
+/* Cards grid */
+.cards-area { max-width: 1200px; margin: 20px auto 60px; padding: 0 24px; }
 
 .card-grid-view {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 14px;
 }
 
+/* Data card — top accent strip design */
 .data-card {
     background: var(--card-bg); border: 1px solid var(--border);
-    border-radius: var(--rm); padding: 20px;
-    display: flex; flex-direction: column; gap: 10px;
+    border-radius: var(--rm); overflow: hidden;
+    display: flex; flex-direction: column;
     transition: all .2s var(--ease);
 }
-.data-card:hover { border-color: var(--border2); transform: translateY(-1px); background: var(--card2); }
+.data-card:hover { border-color: var(--border2); transform: translateY(-2px); background: var(--card2); }
+.border-pokeapi:hover  { box-shadow: 0 10px 36px rgba(var(--poke-rgb),.14); }
+.border-github:hover   { box-shadow: 0 10px 36px rgba(var(--github-rgb),.14); }
+.border-weather:hover  { box-shadow: 0 10px 36px rgba(var(--weather-rgb),.14); }
+.border-user:hover     { box-shadow: 0 10px 36px rgba(var(--user-rgb),.14); }
 
-.border-pokeapi { border-left: 3px solid rgba(var(--poke-rgb),.6); }
-.border-github  { border-left: 3px solid rgba(var(--github-rgb),.6); }
-.border-weather { border-left: 3px solid rgba(var(--weather-rgb),.6); }
-.border-user    { border-left: 3px solid rgba(var(--user-rgb),.6); }
+/* Top accent gradient bar */
+.dc-accent { height: 2px; flex-shrink: 0; }
+.border-pokeapi  .dc-accent { background: linear-gradient(90deg, var(--poke) 0%, rgba(var(--poke-rgb),0) 70%); }
+.border-github   .dc-accent { background: linear-gradient(90deg, var(--github) 0%, rgba(var(--github-rgb),0) 70%); }
+.border-weather  .dc-accent { background: linear-gradient(90deg, var(--weather) 0%, rgba(var(--weather-rgb),0) 70%); }
+.border-user     .dc-accent { background: linear-gradient(90deg, var(--user) 0%, rgba(var(--user-rgb),0) 70%); }
 
+/* Card inner */
+.dc-inner { padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
 .data-card-header { display: flex; align-items: center; justify-content: space-between; }
 
 .source-tag {
     font-size: 9px; font-weight: 800; text-transform: uppercase;
     letter-spacing: .5px; padding: 2px 8px; border-radius: 5px;
+    display: flex; align-items: center; gap: 4px;
 }
-.tag-pokeapi { background: rgba(var(--poke-rgb),.1);    color: var(--poke); }
-.tag-github  { background: rgba(var(--github-rgb),.1);  color: var(--github); }
-.tag-weather { background: rgba(var(--weather-rgb),.1); color: var(--weather); }
-.tag-user    { background: rgba(var(--user-rgb),.1);    color: var(--user); }
+.tag-pokeapi { background: rgba(var(--poke-rgb),.12);    color: var(--poke); }
+.tag-github  { background: rgba(var(--github-rgb),.12);  color: var(--github); }
+.tag-weather { background: rgba(var(--weather-rgb),.12); color: var(--weather); }
+.tag-user    { background: rgba(var(--user-rgb),.12);    color: var(--user); }
 
 .data-id      { font-size: 10px; color: var(--dim); font-family: monospace; }
 .data-title   { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; }
-.data-content { font-size: 13px; color: var(--sub); line-height: 1.6; }
-.data-time    { font-size: 11px; color: var(--dim); margin-top: 4px; font-family: monospace; }
+.data-content { font-size: 13px; color: var(--sub); line-height: 1.6; flex: 1; }
+.data-time    { font-size: 10px; color: var(--dim); font-family: monospace; padding-top: 4px; border-top: 1px solid var(--border); }
 
 .empty-state {
     padding: 100px 20px; text-align: center;
