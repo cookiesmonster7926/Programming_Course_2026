@@ -9,18 +9,16 @@
 <body>
 
 <!-- ===== 頁首 ===== -->
-<header class="site-header">
+<header class="header">
     <div class="header-inner">
-        <div>
-            <h1 class="site-title">🗄 資料庫內容</h1>
-            <p class="site-sub">api_gallery 資料表 · 共 {{ posts|length }} 筆
-                {% if active_source %} · 篩選：{{ active_source }}{% endif %}
-            </p>
+        <div class="header-brand">
+            <span class="brand-dot"></span>
+            <span>資料庫 · 共 {{ posts|length }} 筆{% if active_source %} · {{ active_source }}{% endif %}</span>
         </div>
         <nav class="header-nav">
-            <a href="/" class="nav-btn">← 回首頁</a>
+            <a href="/" class="nav-pill">← 首頁</a>
             <a href="/api/data{% if active_source %}?source={{ active_source }}{% endif %}"
-               target="_blank" class="nav-btn nav-btn-outline">{ } JSON</a>
+               target="_blank" class="nav-pill nav-pill-ghost">JSON</a>
         </nav>
     </div>
 </header>
@@ -41,7 +39,7 @@
 <main class="cards-area">
 
     {% if posts %}
-    <div class="card-grid">
+    <div class="card-grid-view">
         {% for post in posts %}
         <div class="data-card border-{{ post.source | lower | replace('randomuser', 'user') }}">
             <div class="data-card-header">

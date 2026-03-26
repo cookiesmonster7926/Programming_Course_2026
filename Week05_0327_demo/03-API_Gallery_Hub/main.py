@@ -21,7 +21,6 @@ app = Flask(__name__)
 
 DB_FILE = "gallery.db"
 
-# 天氣代碼對應中文說明（Open-Meteo WMO code）
 WEATHER_CODES = {
     0: "晴天", 1: "大致晴朗", 2: "局部多雲", 3: "陰天",
     45: "有霧", 48: "結冰霧",
@@ -31,6 +30,18 @@ WEATHER_CODES = {
     80: "陣雨（輕）", 81: "陣雨（中）", 82: "陣雨（重）",
     95: "雷陣雨",
 }
+
+# 台灣各城市座標（隨機輪換，讓每次天氣抓取更有趣）
+TAIWAN_CITIES = [
+    {"name": "台北", "lat": 25.0330, "lon": 121.5654},
+    {"name": "台中", "lat": 24.1477, "lon": 120.6736},
+    {"name": "台南", "lat": 22.9999, "lon": 120.2269},
+    {"name": "高雄", "lat": 22.6273, "lon": 120.3014},
+    {"name": "花蓮", "lat": 23.9871, "lon": 121.6014},
+    {"name": "新竹", "lat": 24.8138, "lon": 120.9675},
+    {"name": "宜蘭", "lat": 24.7021, "lon": 121.7377},
+    {"name": "嘉義", "lat": 23.4801, "lon": 120.4491},
+]
 
 
 # =============================================================================
@@ -156,13 +167,14 @@ def fetch_github():
 
 @app.route("/fetch/weather")
 def fetch_weather():
-    """抓取 Open-Meteo 台中天氣，支援 AJAX"""
+    """抓取 Open-Meteo 隨機台灣城市天氣，支援 AJAX"""
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
-        url = (
-            "https://api.open-meteo.com/v1/forecast"
-            "?latitude=24.1477&longitude=120.6736"
-            "&current=temperature_2m,weathercode,windspeed_10m"
+        city = random.choice(TAIWAN_CITIES)
+        url  = (
+            f"https://api.open-meteo.com/v1/forecast"
+            f"?latitude={city['lat']}&longitude={city['lon']}"
+            f"&current=temperature_2m,weathercode,windspeed_10m"
         )
         data    = requests.get(url, timeout=5).json()
         current = data.get("current", {})
@@ -172,14 +184,14 @@ def fetch_weather():
         windspeed = current.get("windspeed_10m", "?")
         weather   = WEATHER_CODES.get(code, f"代碼 {code}")
 
-        title   = f"台中市 · {weather}"
+        title   = f"{city['name']} · {weather}"
         content = f"氣溫：{temp}°C　風速：{windspeed} km/h"
         insert_record("Weather", title, content)
 
         count = get_counts().get("Weather", 0)
         if is_ajax:
             return jsonify(ok=True, title=title, content=content,
-                           temp=temp, count=count, source="Weather")
+                           temp=temp, city=city['name'], count=count, source="Weather")
     except Exception as e:
         print(f"[Weather 錯誤] {e}")
         if is_ajax:
@@ -218,6 +230,32 @@ def fetch_user():
             return jsonify(ok=False, error=str(e)), 500
 
     return redirect(url_for("index"))
+
+
+@app.route("/api/peer")
+def api_peer():
+    """
+    Peer Connect：代理抓取同學的 /api/data 端點。
+    由後端發送請求，避免瀏覽器的跨域（CORS）限制。
+    用法：GET /api/peer?ip=192.168.1.5&port=5002
+    """
+    ip   = request.args.get("ip", "").strip()
+    port = request.args.get("port", "5002").strip()
+
+    if not ip:
+        return jsonify(ok=False, error="請輸入 IP 位址"), 400
+
+    try:
+        url  = f"http://{ip}:{port}/api/data"
+        resp = requests.get(url, timeout=5)
+        data = resp.json()
+        return jsonify(ok=True, data=data, peer=ip, port=port, count=len(data))
+    except requests.exceptions.ConnectionError:
+        return jsonify(ok=False, error=f"無法連線到 {ip}:{port}，請確認對方的 Flask 是否啟動"), 503
+    except requests.exceptions.Timeout:
+        return jsonify(ok=False, error=f"連線 {ip}:{port} 逾時"), 504
+    except Exception as e:
+        return jsonify(ok=False, error=str(e)), 500
 
 
 @app.route("/view")

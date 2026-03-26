@@ -8,337 +8,339 @@
 </head>
 <body>
 
-<!-- ===== 頁首 ===== -->
-<header class="site-header">
+<header class="header">
     <div class="header-inner">
-        <div class="logo-area">
-            <h1 class="site-title">API Gallery Hub</h1>
-            <div class="week-badges">
-                <span class="badge badge-w4">Week 04 · HTML/CSS + API</span>
-                <span class="badge-arrow">→</span>
-                <span class="badge badge-w5">Week 05 · Flask + SQLite</span>
-            </div>
+        <div class="header-brand">
+            <span class="brand-dot"></span>
+            <span class="brand-name">API Gallery Hub</span>
         </div>
         <nav class="header-nav">
-            <a href="/view" class="nav-btn">🗄 資料庫</a>
-            <a href="/api/data" target="_blank" class="nav-btn nav-btn-outline">{ } JSON API</a>
+            <a href="/view" class="nav-pill">資料庫 <span class="pill-count" id="nav-total">{{ counts.values() | sum }}</span></a>
+            <a href="/api/data" target="_blank" class="nav-pill nav-pill-ghost">JSON</a>
         </nav>
     </div>
 </header>
 
-<!-- ===== 對比說明 ===== -->
-<div class="compare-bar">
-    <div class="compare-item dim">
-        <span class="compare-icon">📄</span>
-        <span>Week04：跑 script → 生成靜態 .html</span>
-    </div>
-    <div class="compare-sep">VS</div>
-    <div class="compare-item bright">
-        <span class="compare-icon">⚡</span>
-        <span>Week05：按按鈕 → Flask 即時抓 → 存 SQLite → 同學來爬</span>
-    </div>
-</div>
+<div class="app-body">
 
-<!-- ===== 主要 Grid ===== -->
-<main class="main-layout">
+    <!-- ── 左側主內容 ── -->
+    <div class="content-left">
 
-    <!-- 左側：4 張 API 卡片 -->
-    <section class="bento-grid">
+        <!-- API 卡片 2×2 -->
+        <div class="card-grid">
 
-        <!-- PokeAPI -->
-        <div class="api-card card-poke" id="card-PokeAPI">
-            <div class="card-accent"></div>
-            <div class="card-inner">
-                <div class="card-head">
-                    <div class="card-label">
-                        <span class="card-emoji">🎮</span>
-                        <span class="card-name">PokeAPI</span>
+            <!-- PokeAPI -->
+            <div class="acard acard-poke" id="card-PokeAPI">
+                <div class="acard-glow"></div>
+                <div class="acard-body">
+                    <div class="acard-top">
+                        <div class="acard-icon">🎮</div>
+                        <div class="acard-meta">
+                            <div class="acard-source">PokeAPI</div>
+                            <div class="acard-endpoint">pokeapi.co/api/v2/pokemon/{id}</div>
+                        </div>
+                        <div class="acard-count" id="count-PokeAPI">{{ counts.get('PokeAPI',0) }}</div>
                     </div>
-                    <span class="count-badge" id="count-PokeAPI">
-                        {{ counts.get('PokeAPI', 0) }} 筆
-                    </span>
-                </div>
 
-                <p class="card-desc">
-                    隨機抓取第一世代寶可夢（#001–#151），包含類型、身高、體重、精靈圖片。
-                </p>
-
-                <div class="card-url">GET pokeapi.co/api/v2/pokemon/{id}</div>
-
-                <!-- preview 區（AJAX 成功後填入） -->
-                <div class="card-preview" id="preview-PokeAPI" style="display:none">
-                    <img class="preview-sprite" id="sprite-PokeAPI" src="" alt="">
-                    <div class="preview-info">
-                        <div class="preview-title" id="preview-title-PokeAPI"></div>
-                        <div class="preview-content" id="preview-content-PokeAPI"></div>
+                    <div class="acard-preview" id="preview-PokeAPI">
+                        <img class="preview-sprite pixel" id="sprite-PokeAPI" src="" alt="">
+                        <div>
+                            <div class="preview-name" id="preview-title-PokeAPI">—</div>
+                            <div class="preview-sub"  id="preview-content-PokeAPI">尚未抓取</div>
+                        </div>
                     </div>
-                </div>
 
-                <button class="card-btn" onclick="doFetch('poke', 'PokeAPI')">
-                    <span class="btn-text">▶ 抓取寶可夢</span>
-                    <span class="btn-spinner" style="display:none">⏳ 抓取中…</span>
+                    <button class="acard-btn" onclick="doFetch('poke','PokeAPI')">
+                        <span class="btn-idle">抓取寶可夢</span>
+                        <span class="btn-busy" hidden>抓取中…</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- GitHub -->
+            <div class="acard acard-github" id="card-GitHub">
+                <div class="acard-glow"></div>
+                <div class="acard-body">
+                    <div class="acard-top">
+                        <div class="acard-icon">🐧</div>
+                        <div class="acard-meta">
+                            <div class="acard-source">GitHub API</div>
+                            <div class="acard-endpoint">api.github.com/users/torvalds</div>
+                        </div>
+                        <div class="acard-count" id="count-GitHub">{{ counts.get('GitHub',0) }}</div>
+                    </div>
+
+                    <div class="acard-preview" id="preview-GitHub">
+                        <img class="preview-avatar" id="avatar-GitHub" src="" alt="">
+                        <div>
+                            <div class="preview-name" id="preview-title-GitHub">—</div>
+                            <div class="preview-sub"  id="preview-content-GitHub">尚未抓取</div>
+                        </div>
+                    </div>
+
+                    <button class="acard-btn" onclick="doFetch('github','GitHub')">
+                        <span class="btn-idle">抓取 GitHub</span>
+                        <span class="btn-busy" hidden>抓取中…</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Weather -->
+            <div class="acard acard-weather" id="card-Weather">
+                <div class="acard-glow"></div>
+                <div class="acard-body">
+                    <div class="acard-top">
+                        <div class="acard-icon">🌤</div>
+                        <div class="acard-meta">
+                            <div class="acard-source">Open-Meteo</div>
+                            <div class="acard-endpoint">隨機台灣城市 · 無需 API Key</div>
+                        </div>
+                        <div class="acard-count" id="count-Weather">{{ counts.get('Weather',0) }}</div>
+                    </div>
+
+                    <div class="acard-preview" id="preview-Weather">
+                        <div class="preview-temp" id="preview-temp-Weather">—°</div>
+                        <div>
+                            <div class="preview-name" id="preview-title-Weather">—</div>
+                            <div class="preview-sub"  id="preview-content-Weather">尚未抓取</div>
+                        </div>
+                    </div>
+
+                    <button class="acard-btn" onclick="doFetch('weather','Weather')">
+                        <span class="btn-idle">抓取天氣</span>
+                        <span class="btn-busy" hidden>抓取中…</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- RandomUser -->
+            <div class="acard acard-user" id="card-RandomUser">
+                <div class="acard-glow"></div>
+                <div class="acard-body">
+                    <div class="acard-top">
+                        <div class="acard-icon">👤</div>
+                        <div class="acard-meta">
+                            <div class="acard-source">RandomUser</div>
+                            <div class="acard-endpoint">randomuser.me/api/</div>
+                        </div>
+                        <div class="acard-count" id="count-RandomUser">{{ counts.get('RandomUser',0) }}</div>
+                    </div>
+
+                    <div class="acard-preview" id="preview-RandomUser">
+                        <img class="preview-avatar" id="avatar-RandomUser" src="" alt="">
+                        <div>
+                            <div class="preview-name" id="preview-title-RandomUser">—</div>
+                            <div class="preview-sub"  id="preview-content-RandomUser">尚未抓取</div>
+                        </div>
+                    </div>
+
+                    <button class="acard-btn" onclick="doFetch('user','RandomUser')">
+                        <span class="btn-idle">抓取用戶</span>
+                        <span class="btn-busy" hidden>抓取中…</span>
+                    </button>
+                </div>
+            </div>
+
+        </div><!-- /card-grid -->
+
+        <!-- ── Peer Connect ── -->
+        <div class="peer-section">
+            <div class="peer-header">
+                <span class="peer-icon">🔗</span>
+                <div>
+                    <div class="peer-title">Peer Connect</div>
+                    <div class="peer-sub">輸入同學的 IP，抓取他們資料庫裡的資料</div>
+                </div>
+            </div>
+
+            <div class="peer-input-row">
+                <span class="peer-label">http://</span>
+                <input class="peer-ip" id="peer-ip" type="text"
+                       placeholder="192.168.1.XX" maxlength="15">
+                <span class="peer-label">:</span>
+                <input class="peer-port" id="peer-port" type="text"
+                       value="5002" maxlength="5">
+                <span class="peer-label">/api/data</span>
+                <button class="peer-btn" onclick="doPeerFetch()">
+                    <span id="peer-btn-text">連線</span>
                 </button>
+            </div>
+
+            <div class="peer-result" id="peer-result" hidden>
+                <div class="peer-result-header">
+                    <span id="peer-result-title">—</span>
+                    <span class="peer-result-close" onclick="document.getElementById('peer-result').hidden=true">✕</span>
+                </div>
+                <div class="peer-cards" id="peer-cards"></div>
             </div>
         </div>
 
-        <!-- GitHub -->
-        <div class="api-card card-github" id="card-GitHub">
-            <div class="card-accent"></div>
-            <div class="card-inner">
-                <div class="card-head">
-                    <div class="card-label">
-                        <span class="card-emoji">🐧</span>
-                        <span class="card-name">GitHub API</span>
-                    </div>
-                    <span class="count-badge" id="count-GitHub">
-                        {{ counts.get('GitHub', 0) }} 筆
-                    </span>
-                </div>
+    </div><!-- /content-left -->
 
-                <p class="card-desc">
-                    抓取 Linux 之父 Linus Torvalds 的公開資料：頭像、簡介、repo 數、追蹤者。
-                </p>
-
-                <div class="card-url">GET api.github.com/users/torvalds</div>
-
-                <div class="card-preview" id="preview-GitHub" style="display:none">
-                    <img class="preview-avatar" id="avatar-GitHub" src="" alt="">
-                    <div class="preview-info">
-                        <div class="preview-title" id="preview-title-GitHub"></div>
-                        <div class="preview-content" id="preview-content-GitHub"></div>
-                    </div>
-                </div>
-
-                <button class="card-btn" onclick="doFetch('github', 'GitHub')">
-                    <span class="btn-text">▶ 抓取 GitHub</span>
-                    <span class="btn-spinner" style="display:none">⏳ 抓取中…</span>
-                </button>
-            </div>
+    <!-- ── 右側 Live Feed ── -->
+    <aside class="feed-panel">
+        <div class="feed-head">
+            <span class="feed-live-dot"></span>
+            <span class="feed-title">Live Feed</span>
         </div>
-
-        <!-- Weather -->
-        <div class="api-card card-weather" id="card-Weather">
-            <div class="card-accent"></div>
-            <div class="card-inner">
-                <div class="card-head">
-                    <div class="card-label">
-                        <span class="card-emoji">🌤</span>
-                        <span class="card-name">Open-Meteo 天氣</span>
-                    </div>
-                    <span class="count-badge" id="count-Weather">
-                        {{ counts.get('Weather', 0) }} 筆
-                    </span>
-                </div>
-
-                <p class="card-desc">
-                    不需要 API Key！抓取台中市即時天氣：氣溫、天況、風速。
-                </p>
-
-                <div class="card-url">GET api.open-meteo.com/v1/forecast</div>
-
-                <div class="card-preview" id="preview-Weather" style="display:none">
-                    <div class="preview-temp" id="preview-temp-Weather"></div>
-                    <div class="preview-info">
-                        <div class="preview-title" id="preview-title-Weather"></div>
-                        <div class="preview-content" id="preview-content-Weather"></div>
-                    </div>
-                </div>
-
-                <button class="card-btn" onclick="doFetch('weather', 'Weather')">
-                    <span class="btn-text">▶ 抓取天氣</span>
-                    <span class="btn-spinner" style="display:none">⏳ 抓取中…</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- RandomUser -->
-        <div class="api-card card-user" id="card-RandomUser">
-            <div class="card-accent"></div>
-            <div class="card-inner">
-                <div class="card-head">
-                    <div class="card-label">
-                        <span class="card-emoji">👤</span>
-                        <span class="card-name">RandomUser</span>
-                    </div>
-                    <span class="count-badge" id="count-RandomUser">
-                        {{ counts.get('RandomUser', 0) }} 筆
-                    </span>
-                </div>
-
-                <p class="card-desc">
-                    每次產生一個隨機假用戶，包含頭像、姓名、Email、所在城市。
-                </p>
-
-                <div class="card-url">GET randomuser.me/api/</div>
-
-                <div class="card-preview" id="preview-RandomUser" style="display:none">
-                    <img class="preview-avatar" id="avatar-RandomUser" src="" alt="">
-                    <div class="preview-info">
-                        <div class="preview-title" id="preview-title-RandomUser"></div>
-                        <div class="preview-content" id="preview-content-RandomUser"></div>
-                    </div>
-                </div>
-
-                <button class="card-btn" onclick="doFetch('user', 'RandomUser')">
-                    <span class="btn-text">▶ 抓取用戶</span>
-                    <span class="btn-spinner" style="display:none">⏳ 抓取中…</span>
-                </button>
-            </div>
-        </div>
-
-    </section>
-
-    <!-- 右側：Live Feed -->
-    <aside class="live-feed">
-        <div class="feed-header">
-            <span class="feed-dot"></span>
-            <span>Live Feed</span>
-            <span class="feed-total">共 <strong id="total-count">{{ counts.values() | sum }}</strong> 筆</span>
-        </div>
-        <div class="feed-list" id="feed-list">
-            <div class="feed-empty">按左邊的按鈕開始抓資料 →</div>
+        <div class="feed-body" id="feed-body">
+            <div class="feed-hint">按左側按鈕開始抓取</div>
         </div>
     </aside>
 
-</main>
+</div><!-- /app-body -->
 
-<!-- ===== Toast 通知 ===== -->
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- ===== 頁尾 ===== -->
-<footer class="site-footer">
-    程式設計實習 2026 · 逢甲大學 ·
-    你的 JSON API：<code>http://你的IP:5002/api/data</code>
-</footer>
-
 <script>
-// =============================================================================
-// AJAX 抓取邏輯
-// 這裡展示 Week05 的核心概念：前端用 fetch() 呼叫後端 Flask API
-// 後端回傳 JSON → 前端即時更新，不需要跳頁
-// =============================================================================
-
-async function doFetch(endpoint, source) {
-    const card   = document.getElementById(`card-${source}`);
-    const btnEl  = card.querySelector('.card-btn');
-    const btnTxt = btnEl.querySelector('.btn-text');
-    const btnSpin= btnEl.querySelector('.btn-spinner');
-
-    // 1. 顯示 loading 狀態
-    btnEl.disabled = true;
-    btnTxt.style.display = 'none';
-    btnSpin.style.display = 'inline';
-    card.classList.add('loading');
+// ──────────────────────────────────────────────
+//  API 抓取（AJAX，不跳頁）
+// ──────────────────────────────────────────────
+async function doFetch(ep, source) {
+    const card = document.getElementById(`card-${source}`);
+    const btn  = card.querySelector('.acard-btn');
+    setLoading(btn, true);
 
     try {
-        // 2. 用 fetch() 呼叫 Flask route（加 X-Requested-With 讓後端知道是 AJAX）
-        const res  = await fetch(`/fetch/${endpoint}`, {
+        const res  = await fetch(`/fetch/${ep}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         });
         const data = await res.json();
 
-        if (data.ok) {
-            // 3. 更新計數器（動畫）
-            animateCount(`count-${source}`, data.count);
+        if (!data.ok) throw new Error(data.error || '未知錯誤');
 
-            // 4. 更新 preview 區域
-            showPreview(source, data);
-
-            // 5. 加入 Live Feed
-            addFeedItem(data);
-
-            // 6. 更新總筆數
-            const totalEl = document.getElementById('total-count');
-            animateCount('total-count', parseInt(totalEl.textContent) + 1);
-
-            // 7. 成功提示
-            showToast(`✅ ${source} 抓到了：${data.title}`, 'success');
-
-            // 8. 卡片閃光效果
-            card.classList.add('fetched');
-            setTimeout(() => card.classList.remove('fetched'), 600);
-        } else {
-            showToast(`❌ ${source} 錯誤：${data.error}`, 'error');
-        }
-    } catch (err) {
-        showToast(`❌ 網路錯誤：${err.message}`, 'error');
+        updateCount(source, data.count);
+        updatePreview(source, data);
+        addFeedItem(data);
+        updateNavTotal(1);
+        card.classList.add('flash');
+        setTimeout(() => card.classList.remove('flash'), 600);
+        toast(`${data.title}`, 'ok');
+    } catch(e) {
+        toast(`${source} 錯誤：${e.message}`, 'err');
     } finally {
-        // 恢復按鈕
-        btnEl.disabled = false;
-        btnTxt.style.display = 'inline';
-        btnSpin.style.display = 'none';
-        card.classList.remove('loading');
+        setLoading(btn, false);
     }
 }
 
-// 計數器數字跳動動畫
-function animateCount(elId, newVal) {
-    const el = document.getElementById(elId);
-    el.classList.add('count-bump');
-    el.innerHTML = elId === 'total-count' ? newVal : `${newVal} 筆`;
-    setTimeout(() => el.classList.remove('count-bump'), 400);
+function setLoading(btn, on) {
+    btn.disabled = on;
+    btn.querySelector('.btn-idle').hidden = on;
+    btn.querySelector('.btn-busy').hidden = !on;
 }
 
-// 根據來源顯示 preview
-function showPreview(source, data) {
-    const previewEl = document.getElementById(`preview-${source}`);
-    previewEl.style.display = 'flex';
+function updateCount(source, n) {
+    const el = document.getElementById(`count-${source}`);
+    el.textContent = n;
+    el.classList.remove('pop');
+    void el.offsetWidth;
+    el.classList.add('pop');
+}
 
+function updateNavTotal(delta) {
+    const el = document.getElementById('nav-total');
+    el.textContent = parseInt(el.textContent || '0') + delta;
+}
+
+function updatePreview(source, data) {
     document.getElementById(`preview-title-${source}`).textContent   = data.title;
     document.getElementById(`preview-content-${source}`).textContent = data.content;
 
-    if (source === 'PokeAPI' && data.sprite) {
-        document.getElementById(`sprite-PokeAPI`).src = data.sprite;
-    }
-    if ((source === 'GitHub' || source === 'RandomUser') && data.avatar) {
+    if (source === 'PokeAPI' && data.sprite)
+        document.getElementById('sprite-PokeAPI').src = data.sprite;
+    if ((source === 'GitHub' || source === 'RandomUser') && data.avatar)
         document.getElementById(`avatar-${source}`).src = data.avatar;
-    }
-    if (source === 'Weather' && data.temp) {
-        document.getElementById(`preview-temp-Weather`).textContent = `${data.temp}°C`;
-    }
+    if (source === 'Weather' && data.temp != null)
+        document.getElementById('preview-temp-Weather').textContent = `${data.temp}°`;
+
+    document.getElementById(`preview-${source}`).classList.add('preview-visible');
 }
 
-// 在 Live Feed 加入一筆
+// ──────────────────────────────────────────────
+//  Live Feed
+// ──────────────────────────────────────────────
+const COLORS = { PokeAPI:'#cd2834', GitHub:'#3fb27f', Weather:'#38bdf8', RandomUser:'#a78bfa' };
+
 function addFeedItem(data) {
-    const feedList = document.getElementById('feed-list');
+    const body = document.getElementById('feed-body');
+    body.querySelector('.feed-hint')?.remove();
 
-    // 清除「還沒有資料」提示
-    const empty = feedList.querySelector('.feed-empty');
-    if (empty) empty.remove();
-
-    const colorMap = {
-        PokeAPI: 'var(--poke)', GitHub: 'var(--github)',
-        Weather: 'var(--weather)', RandomUser: 'var(--user)'
-    };
-
-    const item = document.createElement('div');
-    item.className = 'feed-item feed-item-new';
-    item.innerHTML = `
-        <span class="feed-dot-src" style="background:${colorMap[data.source]}"></span>
-        <div class="feed-item-body">
-            <span class="feed-src">${data.source}</span>
-            <span class="feed-title">${data.title}</span>
-            <span class="feed-desc">${data.content}</span>
-        </div>
-    `;
-
-    // 新項目插在最上面
-    feedList.insertBefore(item, feedList.firstChild);
-    setTimeout(() => item.classList.remove('feed-item-new'), 400);
-
-    // 超過 20 筆自動刪最舊的
-    const items = feedList.querySelectorAll('.feed-item');
-    if (items.length > 20) items[items.length - 1].remove();
+    const el = document.createElement('div');
+    el.className = 'feed-item';
+    el.innerHTML = `
+        <div class="fi-dot" style="background:${COLORS[data.source]??'#666'}"></div>
+        <div class="fi-body">
+            <div class="fi-src">${data.source}</div>
+            <div class="fi-name">${data.title}</div>
+            <div class="fi-desc">${data.content}</div>
+        </div>`;
+    body.insertBefore(el, body.firstChild);
+    if (body.children.length > 30) body.lastChild.remove();
 }
 
-// Toast 通知
-function showToast(msg, type) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.className   = `toast toast-${type} toast-show`;
-    setTimeout(() => toast.classList.remove('toast-show'), 3000);
+// ──────────────────────────────────────────────
+//  Peer Connect
+// ──────────────────────────────────────────────
+async function doPeerFetch() {
+    const ip   = document.getElementById('peer-ip').value.trim();
+    const port = document.getElementById('peer-port').value.trim() || '5002';
+    const btn  = document.getElementById('peer-btn-text');
+
+    if (!ip) { toast('請輸入同學的 IP', 'err'); return; }
+
+    btn.textContent = '連線中…';
+    document.querySelector('.peer-btn').disabled = true;
+
+    try {
+        const res  = await fetch(`/api/peer?ip=${encodeURIComponent(ip)}&port=${port}`);
+        const data = await res.json();
+
+        if (!data.ok) throw new Error(data.error);
+
+        const result = document.getElementById('peer-result');
+        document.getElementById('peer-result-title').textContent =
+            `${ip}:${port} · 共 ${data.count} 筆資料`;
+
+        const cardsEl = document.getElementById('peer-cards');
+        cardsEl.innerHTML = '';
+
+        if (data.data.length === 0) {
+            cardsEl.innerHTML = '<div class="peer-empty">對方資料庫是空的</div>';
+        } else {
+            data.data.slice(0, 12).forEach(rec => {
+                const c = document.createElement('div');
+                c.className = 'peer-card';
+                const color = COLORS[rec.source] ?? '#666';
+                c.innerHTML = `
+                    <div class="peer-card-src" style="color:${color}">${rec.source}</div>
+                    <div class="peer-card-title">${rec.title}</div>
+                    <div class="peer-card-content">${rec.content}</div>`;
+                cardsEl.appendChild(c);
+            });
+        }
+
+        result.hidden = false;
+        toast(`成功從 ${ip} 取得 ${data.count} 筆資料`, 'ok');
+    } catch(e) {
+        toast(e.message, 'err');
+    } finally {
+        btn.textContent = '連線';
+        document.querySelector('.peer-btn').disabled = false;
+    }
+}
+
+// ──────────────────────────────────────────────
+//  Toast
+// ──────────────────────────────────────────────
+let _toastTimer;
+function toast(msg, type) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `toast toast-${type} toast-in`;
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => el.classList.remove('toast-in'), 3200);
 }
 </script>
-
 </body>
 </html>
