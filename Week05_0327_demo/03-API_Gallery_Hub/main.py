@@ -329,5 +329,4 @@ if __name__ == "__main__":
     print("=" * 55)
 
     # 用 5002，避開 macOS AirPlay (5000) 和 02-Data-Hub (5001)
-    # host='0.0.0.0' 讓區域網路內的同學也能連進來
-    app.run(host="0.0.0.0", port=5002, debug=True)
+    app.run(debug=True, port=5002)
