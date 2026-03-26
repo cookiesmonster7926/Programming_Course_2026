@@ -14,6 +14,9 @@ import sqlite3
 import requests
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 
+# 每個 API 的最後一筆 preview（存在記憶體，重啟清空）
+_last_fetch: dict = {}
+
 app = Flask(__name__)
 
 DB_FILE = "gallery.db"
@@ -48,8 +51,11 @@ def init_db():
     conn.close()
 
 
-def insert_record(source, title, content):
-    """共用的資料庫新增函式"""
+def insert_record(source, title, content, extra=None):
+    """
+    共用的資料庫新增函式。
+    extra: 額外的 preview 資料（dict），供前端 AJAX 即時顯示用，不存 DB。
+    """
     conn = sqlite3.connect(DB_FILE)
     conn.execute(
         "INSERT INTO api_gallery (source, title, content) VALUES (?, ?, ?)",
@@ -57,6 +63,8 @@ def insert_record(source, title, content):
     )
     conn.commit()
     conn.close()
+    # 更新記憶體中的 preview
+    _last_fetch[source] = {"title": title, "content": content, **(extra or {})}
 
 
 def get_counts():
@@ -84,12 +92,13 @@ def index():
 @app.route("/fetch/poke")
 def fetch_poke():
     """
-    抓取 PokeAPI 隨機寶可夢資料
-    每次抓不同的寶可夢（1 ~ 151 第一世代），讓資料更有趣
+    抓取 PokeAPI 隨機寶可夢資料（支援 AJAX JSON 回應 & 傳統 redirect）
+    前端用 fetch() 呼叫時，回傳 JSON；直接瀏覽器訪問時，回傳 redirect。
     """
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
         poke_id = random.randint(1, 151)
-        url = f"https://pokeapi.co/api/v2/pokemon/{poke_id}"
+        url  = f"https://pokeapi.co/api/v2/pokemon/{poke_id}"
         data = requests.get(url, timeout=5).json()
 
         name    = data.get("name", "unknown").capitalize()
@@ -97,46 +106,58 @@ def fetch_poke():
         types   = " / ".join(t["type"]["name"] for t in data.get("types", []))
         height  = data.get("height", 0)
         weight  = data.get("weight", 0)
+        sprite  = data.get("sprites", {}).get("front_default", "")
 
         title   = f"#{poke_id:03d} {name}"
         content = f"類型：{types}　身高：{height * 0.1:.1f}m　體重：{weight * 0.1:.1f}kg"
-        insert_record("PokeAPI", title, content)
+        insert_record("PokeAPI", title, content, extra={"sprite": sprite, "types": types})
+
+        count = get_counts().get("PokeAPI", 0)
+        if is_ajax:
+            return jsonify(ok=True, title=title, content=content,
+                           sprite=sprite, count=count, source="PokeAPI")
     except Exception as e:
         print(f"[PokeAPI 錯誤] {e}")
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 500
 
     return redirect(url_for("index"))
 
 
 @app.route("/fetch/github")
 def fetch_github():
-    """
-    抓取 GitHub 知名用戶資料（torvalds = Linux 之父）
-    展示 GitHub API 的公開資訊可以怎麼使用
-    """
+    """抓取 GitHub torvalds 資料，支援 AJAX"""
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
-        url = "https://api.github.com/users/torvalds"
+        url  = "https://api.github.com/users/torvalds"
         data = requests.get(url, headers={"Accept": "application/vnd.github+json"}, timeout=5).json()
 
         name      = data.get("name", "Unknown")
         bio       = data.get("bio") or "（無簡介）"
         repos     = data.get("public_repos", 0)
         followers = data.get("followers", 0)
+        avatar    = data.get("avatar_url", "")
 
         title   = name
         content = f"{bio}　公開 repo：{repos} 個　追蹤者：{followers:,} 人"
-        insert_record("GitHub", title, content)
+        insert_record("GitHub", title, content, extra={"avatar": avatar})
+
+        count = get_counts().get("GitHub", 0)
+        if is_ajax:
+            return jsonify(ok=True, title=title, content=content,
+                           avatar=avatar, count=count, source="GitHub")
     except Exception as e:
         print(f"[GitHub 錯誤] {e}")
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 500
 
     return redirect(url_for("index"))
 
 
 @app.route("/fetch/weather")
 def fetch_weather():
-    """
-    抓取 Open-Meteo 台中即時天氣（不需要 API Key！）
-    latitude/longitude 是台中市中心的座標
-    """
+    """抓取 Open-Meteo 台中天氣，支援 AJAX"""
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
         url = (
             "https://api.open-meteo.com/v1/forecast"
@@ -154,18 +175,23 @@ def fetch_weather():
         title   = f"台中市 · {weather}"
         content = f"氣溫：{temp}°C　風速：{windspeed} km/h"
         insert_record("Weather", title, content)
+
+        count = get_counts().get("Weather", 0)
+        if is_ajax:
+            return jsonify(ok=True, title=title, content=content,
+                           temp=temp, count=count, source="Weather")
     except Exception as e:
         print(f"[Weather 錯誤] {e}")
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 500
 
     return redirect(url_for("index"))
 
 
 @app.route("/fetch/user")
 def fetch_user():
-    """
-    抓取 RandomUser.me 隨機假用戶
-    展示「結構化資料」：每個 user 都有固定的欄位格式
-    """
+    """抓取 RandomUser 假用戶，支援 AJAX"""
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
         url  = "https://randomuser.me/api/"
         data = requests.get(url, timeout=5).json()
@@ -176,12 +202,20 @@ def fetch_user():
         email   = user["email"]
         city    = user["location"]["city"]
         country = user["location"]["country"]
+        avatar  = user["picture"]["thumbnail"]
 
         title   = f"{first} {last}"
         content = f"Email：{email}　地點：{city}, {country}"
-        insert_record("RandomUser", title, content)
+        insert_record("RandomUser", title, content, extra={"avatar": avatar})
+
+        count = get_counts().get("RandomUser", 0)
+        if is_ajax:
+            return jsonify(ok=True, title=title, content=content,
+                           avatar=avatar, count=count, source="RandomUser")
     except Exception as e:
         print(f"[RandomUser 錯誤] {e}")
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 500
 
     return redirect(url_for("index"))
 
