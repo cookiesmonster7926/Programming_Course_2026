@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% load f1_filters %}
+
+{% block title %}{{ driver.name }} · Operations{% endblock %}
+
+{% block content %}
+
+<style>
+  .detail-hero {
+    position: relative;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(5, 8, 15, 0.95) 100%);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    padding: 60px;
+  }
+
+  .driver-bg {
+    position: absolute;
+    top: 0; left: 60%; right: 0; bottom: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15;
+    mask-image: linear-gradient(to right, transparent, black 40%);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 40%);
+    pointer-events: none;
+  }
+
+  .car-showcase {
+    position: relative;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 20px;
+    z-index: 1;
+    overflow: visible;
+  }
+
+  .car-showcase img {
+    width: 110%;
+    max-width: 700px;
+    margin-left: 0;
+    filter: drop-shadow(0 30px 25px rgba(0,0,0,0.8)) drop-shadow(0 10px 10px rgba(0,0,0,0.5));
+    transform: scaleX(-1);
+  }
+
+  /* Ensure left info column sits on top of the car */
+  .detail-hero .row > .col-lg-6:first-child {
+    z-index: 5;
+    position: relative;
+  }
+
+  .stat-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 24px;
+    backdrop-filter: blur(8px);
+  }
+
+  .btn-terminate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .btn-terminate:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #f87171;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, 0.15);
+  }
+
+  .btn-re-sign {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .btn-re-sign:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #34d399;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.15);
+  }
+
+  /* Confirm modal */
+  .confirm-modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .confirm-modal-backdrop.active { display: flex; }
+
+  .confirm-modal {
+    background: #111827;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 440px;
+    text-align: center;
+  }
+</style>
+
+<div class="mb-4">
+  <a href="/" class="btn btn-sm" style="background: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); font-weight: 600;">
+    ← RETURN TO GRID
+  </a>
+</div>
+
+<div class="detail-hero">
+  <!-- Team top accent bar -->
+  <div style="position: absolute; top: 0; left: 0; right: 0; height: 6px; background: {{ team_color }};"></div>
+
+  <!-- Background faint portrait -->
+  <div class="driver-bg" style="background-image: url('{{ driver.image_url }}');"></div>
+
+  <div class="row position-relative z-1">
+    <div class="col-lg-6">
+      <p class="text-uppercase mb-2" style="font-size: 0.85rem; font-weight: 700; letter-spacing: 3px; color: var(--text-muted);">
+        Team: <span style="color: {{ team_color }};">{{ driver.team }}</span>
+      </p>
+      <h1 class="outfit-font text-uppercase" style="font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 900; line-height: 1; margin-bottom: 16px;">
+        {{ driver.name }}
+      </h1>
+
+      <!-- Portrait -->
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <img src="{{ driver.image_url }}" alt="{{ driver.name }}" style="width: 64px; height: 64px; border-radius: 50%; border: 2px solid {{ team_color }}; object-fit: cover;">
+        <div>
+          <div style="font-size: 0.85rem; font-weight: 600;">{{ driver.driver_id }}</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Season 2026 · Official Grid</div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4">
+          <div class="stat-box text-center">
+            <div class="outfit-font" style="font-size: 2.2rem; font-weight: 900; color: #fff;">{{ driver.points }}</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Ops Points</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4">
+          <div class="stat-box text-center">
+            <div class="outfit-font" style="font-size: 1.3rem; font-weight: 900; margin-top: 4px;
+              color: {% if driver.is_signed %}var(--f1-green){% else %}#ef4444{% endif %};">
+              {% if driver.is_signed %}ACTIVE{% else %}FREE AGENT{% endif %}
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;">Contract Status</div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="stat-box text-center">
+            <div class="outfit-font" style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-top: 6px; word-break: break-all;">
+              {{ driver.driver_id }}
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;">Driver Slug</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contract Actions -->
+      <div class="d-flex gap-3 flex-wrap">
+        {% if driver.is_signed %}
+        <button class="btn-terminate" onclick="document.getElementById('confirmModal').classList.add('active')">
+          🚨 Terminate Contract
+        </button>
+        {% else %}
+        <a href="/driver/{{ driver.id }}/sign/" class="btn-re-sign">
+          📝 Re-Sign Driver
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right Car Visualizer -->
+    <div class="col-lg-6 d-flex align-items-center justify-content-center">
+      <div class="car-showcase">
+        <img src="{{ driver.team|car_img_url:'2026' }}" alt="{{ driver.team }} Car Render">
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+    <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0; letter-spacing: 0.5px;">
+      SYSTEM: F1 OFFICIAL CDN · 2026 SEASON DATA
+    </p>
+  </div>
+</div>
+
+<!-- Confirm Termination Modal -->
+{% if driver.is_signed %}
+<div class="confirm-modal-backdrop" id="confirmModal">
+  <div class="confirm-modal">
+    <div style="font-size: 3rem; margin-bottom: 16px;">⚠️</div>
+    <h3 class="outfit-font text-uppercase mb-2" style="font-weight: 800; font-size: 1.3rem;">Confirm Termination</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px;">
+      This will release <strong class="text-white">{{ driver.name }}</strong> from your active fleet. They can be re-recruited from the gacha pool later.
+    </p>
+    <div class="d-flex gap-3 justify-content-center">
+      <a href="/driver/{{ driver.id }}/fire/" class="btn-terminate" style="font-size: 0.85rem;">
+        Confirm Release
+      </a>
+      <button class="btn" onclick="document.getElementById('confirmModal').classList.remove('active')" style="background: rgba(255,255,255,0.1); color: var(--text-main); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

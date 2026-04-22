@@ -23,7 +23,10 @@ Click the folder links in the table below to access the specific code and detail
 | :--- | :--- | :--- |
 | **Week 02** | [📂 Week02_0306_demo](./Week02_0306_demo/) | Environment setup, basic `uv` usage, Speed Typing Challenge GUI |
 | **Week 03** | [📂 Week03_0313_demo](./Week03_0313_demo/) | - |
-| **Week 04** | 🚧 *Coming later* | - |
+| **Week 04** | [📂 Week04_0319_demo](./Week04_0319_demo/) | Material & Demo |
+| **Week 05** | [📂 Week05_0327_demo](./Week05_0327_demo/) | Flask Data Server, API Gallery Hub |
+| **Week 07** | [📂 Week7_0410_demo](./Week7_0410_demo/) | Django F1 Fantasy Manager |
+| **Week 08** | [📂 Week8_0417_demo](./Week8_0417_demo/) | Batch Grading System Mock Server |
 
 *(This table will be continuously updated by the TA...)*
 

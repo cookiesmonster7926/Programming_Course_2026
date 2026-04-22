@@ -11,10 +11,10 @@ import requests
 
 # ↓ 把這個 IP 換成鄰座同學的電腦 IP（在同一個 Wi-Fi 下）
 # 如果要測試自己的：保持 127.0.0.1 即可
-TARGET_IP   = "127.0.0.1"
-TARGET_PORT = 5000
+TARGET_IP   = "192.168.0.250"
+TARGET_PORT = 5002
 
-url = f"http://{TARGET_IP}:{TARGET_PORT}/api/posts"
+url = f"http://{TARGET_IP}:{TARGET_PORT}/api/data"
 
 print("=" * 55)
 print(f"  正在連接：{url}")

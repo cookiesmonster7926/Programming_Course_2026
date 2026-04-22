@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+{% load f1_filters %}
+
+{% block title %}Operations Dashboard · F1 Digital Twin{% endblock %}
+
+{% block content %}
+<style>
+  .hero-section {
+    position: relative;
+    border-radius: 16px;
+    padding: 64px 48px;
+    overflow: hidden;
+    margin-bottom: 48px;
+    border: 1px solid var(--border-light);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);
+    backdrop-filter: blur(20px);
+  }
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--f1-red) 0%, #ff4d4d 50%, transparent 100%);
+  }
+  .hero-bg-text {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.02);
+    font-family: 'Outfit', sans-serif;
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  /* 3D Carousel Styles */
+  .card-grid-container {
+    perspective: 1600px;
+    height: 520px;
+    position: relative;
+    overflow: visible;
+    margin-bottom: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .acard {
+    position: absolute;
+    width: 340px;
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    cursor: default;
+    transition: transform .6s cubic-bezier(.23,1,.32,1),
+                opacity .6s cubic-bezier(.23,1,.32,1),
+                box-shadow .6s cubic-bezier(.23,1,.32,1),
+                border-color .3s;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .acard.carousel-active {
+    transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
+    opacity: 1; z-index: 10;
+    pointer-events: auto;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+  }
+
+  .acard.carousel-prev {
+    transform: translate3d(-85%, 2%, -250px) rotateY(38deg) scale(0.85);
+    opacity: .6; z-index: 5; pointer-events: auto; cursor: pointer;
+  }
+  
+  .acard.carousel-next {
+    transform: translate3d(85%, 2%, -250px) rotateY(-38deg) scale(0.85);
+    opacity: .6; z-index: 5; pointer-events: auto; cursor: pointer;
+  }
+  
+  .acard.carousel-hidden {
+    transform: translate3d(0, 0, -500px) scale(0.7);
+    opacity: 0; z-index: 1;
+  }
+
+  /* Block pointer events on inner items for non-active cards */
+  .acard.carousel-prev *, .acard.carousel-next * { pointer-events: none; }
+  
+  .acard:hover.carousel-prev { transform: translate3d(-90%, 2%, -250px) rotateY(35deg) scale(0.88); opacity: .8; border-color: rgba(255,255,255,0.2); }
+  .acard:hover.carousel-next { transform: translate3d(90%, 2%, -250px) rotateY(-35deg) scale(0.88); opacity: .8; border-color: rgba(255,255,255,0.2); }
+
+  .car-image {
+    width: 125%;
+    margin-left: -12.5%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 15px rgba(0,0,0,0.8)) drop-shadow(0 4px 4px rgba(0,0,0,0.4));
+    transition: transform 0.4s ease;
+    transform: scaleX(-1);
+  }
+  
+  .team-bar { position: absolute; top: 0; left: 0; right: 0; height: 5px; }
+
+  /* Carousel Navigation Buttons */
+  .carousel-nav {
+    position: absolute; top: 50%;
+    width: 100%; max-width: 800px;
+    display: flex; justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: none; z-index: 20;
+  }
+  .carousel-btn {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.14);
+    color: rgba(255,255,255,.65); font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; pointer-events: auto;
+    backdrop-filter: blur(8px);
+    transition: all .2s;
+  }
+  .carousel-btn:hover { background: rgba(255,255,255,.2); color: #fff; transform: scale(1.1); box-shadow: 0 0 20px rgba(255,255,255,0.1); }
+</style>
+
+<!-- Hero Dashboard Header -->
+<div class="hero-section">
+  <div class="hero-bg-text outfit-font">2026</div>
+  <div class="row align-items-center position-relative z-1">
+    <div class="col-lg-7">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <span class="badge" style="background: rgba(225,6,0,0.1); color: var(--f1-red); border: 1px solid rgba(225,6,0,0.2); letter-spacing: 1px;">SEASON 2026</span>
+        <span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-muted); font-weight: 500;">ROSTER CAROUSEL</span>
+      </div>
+      <h1 class="outfit-font text-uppercase" style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; line-height: 1; margin-bottom: 24px;">
+        GLOBAL <span style="color: var(--f1-red);">OPERATIONS</span>
+      </h1>
+      <p style="color: var(--text-muted); max-width: 500px; line-height: 1.6; margin-bottom: 32px; font-size: 1.05rem;">
+        Initialize your dream team from the official 2026 grid. Experience the fluid 3D digital twin lineup with dynamic telemetry synchronization.
+      </p>
+      <div class="d-flex align-items-center gap-4 flex-wrap">
+        <a href="/recruit/" class="btn" style="background: #fff; color: #000; font-weight: 700; border-radius: 4px; padding: 12px 28px; text-transform: uppercase; font-family: 'Outfit', sans-serif;">
+          ⚡ Recruit Driver (Gacha)
+        </a>
+        <div class="d-flex align-items-center gap-2" style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">
+          <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--f1-green); box-shadow: 0 0 10px var(--f1-green);"></div>
+          <span>GRID LOAD: <strong class="text-white">{{ drivers|length }}</strong> / 20</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if drivers %}
+<div class="d-flex align-items-end justify-content-between mb-4 border-bottom pb-2" style="border-color: var(--border-light) !important;">
+  <h2 class="outfit-font text-uppercase mb-0" style="font-weight: 700; font-size: 1.25rem;">Active Fleet Roster</h2>
+  <span style="font-size: 0.75rem; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">3D Rotate Mode</span>
+</div>
+
+<!-- 3D Carousel Showcase -->
+<div class="card-grid-container position-relative w-100" id="carouselGrid">
+  <div class="carousel-nav">
+    <button class="carousel-btn" id="prevBtn" onclick="rotateCarousel(-1)">◂</button>
+    <button class="carousel-btn" id="nextBtn" onclick="rotateCarousel(1)">▸</button>
+  </div>
+
+  {% for driver in drivers %}
+  <a href="/driver/{{ driver.id }}/" class="acard" data-index="{{ forloop.counter0 }}">
+    
+    <!-- Team Color Bar -->
+    <div class="team-bar" style="background: {% if driver.team == 'Ferrari' %}#E80020{% elif driver.team == 'Red Bull Racing' or driver.team == 'Red Bull' %}#0600EF{% elif driver.team == 'McLaren' %}#FF8700{% elif driver.team == 'Mercedes' %}#00D2BE{% elif driver.team == 'Aston Martin' %}#229971{% else %}#555{% endif %};"></div>
+
+    <div style="padding: 24px;">
+      <!-- Portrait & Header -->
+      <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+          <p class="text-uppercase mb-1" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; color: var(--text-muted);">{{ driver.team }}</p>
+          <h3 class="outfit-font m-0 text-uppercase" style="font-size: 1.4rem; font-weight: 800; line-height: 1.1; margin-bottom: 12px !important;">{{ driver.name }}</h3>
+          <div class="mt-2 text-muted" style="font-size: 0.75rem; display: flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0;">
+                <img src="{{ driver.image_url }}" alt="Portrait" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            ID: <span class="text-white">{{ driver.driver_id }}</span>
+          </div>
+        </div>
+        <div class="text-end">
+          <p class="text-uppercase mb-0" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted);">Points</p>
+          <div class="outfit-font" style="font-size: 1.8rem; font-weight: 900; line-height: 1;">{{ driver.points }}</div>
+        </div>
+      </div>
+
+      <!-- Car Render -->
+      <div class="text-center my-4 position-relative" style="height: 140px; display: flex; align-items: center; justify-content: center;">
+        <img src="{{ driver.team|car_img_url:'2026' }}" alt="Car Render" class="car-image">
+      </div>
+
+      <!-- Status Footer -->
+      <div class="d-flex justify-content-between align-items-center mt-auto pt-3" style="border-top: 1px solid rgba(255,255,255,0.06);">
+        <div>
+          <p class="mb-0" style="font-size: 0.8rem; font-weight: 600; color: var(--f1-green);">
+            <span style="display:inline-block; width:6px; height:6px; background:var(--f1-green); border-radius:50%; box-shadow: 0 0 5px var(--f1-green); margin-right:4px;"></span> Active Link
+          </p>
+        </div>
+        <div>
+           <span class="badge" style="background: rgba(255,255,255,0.1); font-weight: 500; font-family: 'Outfit';">View Details →</span>
+        </div>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<script>
+  let currentIndex = 0;
+  const cards = document.querySelectorAll('.acard');
+  const maxIndex = cards.length - 1;
+
+  function updateCarousel() {
+    if(cards.length === 0) return;
+    
+    // Hide navigation if <= 1 card
+    if(cards.length <= 1) {
+        document.querySelector('.carousel-nav').style.display = 'none';
+    }
+
+    cards.forEach((card, idx) => {
+      // Remove all classes
+      card.classList.remove('carousel-active', 'carousel-prev', 'carousel-next', 'carousel-hidden');
+      
+      // Calculate relative position with wraparound
+      let diff = idx - currentIndex;
+      if (diff < -1 && maxIndex > 1) {
+          // Check if we should wrap around to the right
+          if (currentIndex === maxIndex && idx === 0) diff = 1;
+          else diff = -2; // hide
+      }
+      if (diff > 1 && maxIndex > 1) {
+          // Check if we should wrap around to the left
+          if (currentIndex === 0 && idx === maxIndex) diff = -1;
+          else diff = 2; // hide
+      }
+
+      if (diff === 0) {
+        card.classList.add('carousel-active');
+      } else if (diff === -1) {
+        card.classList.add('carousel-prev');
+      } else if (diff === 1) {
+        card.classList.add('carousel-next');
+      } else {
+        card.classList.add('carousel-hidden');
+      }
+    });
+  }
+
+  function rotateCarousel(direction) {
+    if(cards.length <= 1) return;
+    currentIndex += direction;
+    if (currentIndex > maxIndex) currentIndex = 0;
+    if (currentIndex < 0) currentIndex = maxIndex;
+    updateCarousel();
+  }
+
+  // Handle clicking on prev/next cards directly
+  cards.forEach((card, idx) => {
+    card.addEventListener('click', (e) => {
+      if (card.classList.contains('carousel-prev')) {
+        e.preventDefault();
+        rotateCarousel(-1);
+      } else if (card.classList.contains('carousel-next')) {
+        e.preventDefault();
+        rotateCarousel(1);
+      }
+    });
+  });
+
+  // Init
+  updateCarousel();
+</script>
+
+{% else %}
+<!-- Empty State -->
+<div class="glass-panel text-center" style="padding: 100px 24px; border: 1px dashed rgba(255,255,255,0.15);">
+  <div style="font-size: 3rem; margin-bottom: 24px; opacity: 0.5;">👀</div>
+  <h3 class="outfit-font mb-2">TELEMETRY DATABASE EMPTY</h3>
+  <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 32px; max-width: 400px; margin-left: auto; margin-right: auto;">
+    Database successfully cleared. No drivers are currently linked. Initialize the gacha to populate the 3D rotating grid.
+  </p>
+  <a href="/recruit/" class="btn" style="background: var(--f1-red); color: #fff; font-weight: 700; padding: 12px 32px; text-transform: uppercase;">
+    ⚡ Initialize Draft (Gacha)
+  </a>
+</div>
+{% endif %}
+{% endblock %}

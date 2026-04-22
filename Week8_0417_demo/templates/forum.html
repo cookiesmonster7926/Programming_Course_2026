@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>逢大板 — 即時動態</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body { background: #f0f2f5; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    /* ── Navbar ── */
+    .forum-nav {
+      background: #1a56db;
+      padding: .6rem 1.5rem;
+      display: flex; align-items: center; gap: 1.2rem;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(26,86,219,.3);
+    }
+    .forum-nav .brand { color: #fff; font-weight: 800; font-size: 1.15rem; letter-spacing: -.01em; }
+    .forum-nav .nav-links a {
+      color: rgba(255,255,255,.8); text-decoration: none; font-size: .85rem; margin-right: 1.2rem;
+      transition: color .15s;
+    }
+    .forum-nav .nav-links a:hover { color: #fff; }
+    .forum-nav .live-badge {
+      margin-left: auto; background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3); color: #fff;
+      font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #86efac;
+      animation: pulseGreen 1.4s ease-in-out infinite;
+    }
+    @keyframes pulseGreen {
+      0%, 100% { box-shadow: 0 0 0 2px rgba(134,239,172,.3); }
+      50%       { box-shadow: 0 0 0 5px rgba(134,239,172,.05); }
+    }
+
+    /* ── Warning banner ── */
+    .warning-banner {
+      background: linear-gradient(90deg, #dc2626, #ea580c);
+      color: #fff; font-size: .85rem; font-weight: 600;
+      padding: .55rem 1.5rem; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+      animation: flashBg 2s ease-in-out infinite;
+    }
+    @keyframes flashBg {
+      0%, 100% { background: linear-gradient(90deg, #dc2626, #ea580c); }
+      50%       { background: linear-gradient(90deg, #b91c1c, #c2410c); }
+    }
+    .warning-icon { font-size: 1rem; animation: shake .5s ease-in-out infinite alternate; }
+    @keyframes shake {
+      from { transform: rotate(-8deg); }
+      to   { transform: rotate(8deg); }
+    }
+
+    /* ── Boards tab bar ── */
+    .board-tabs {
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 1.5rem;
+      display: flex; gap: 0; overflow-x: auto;
+    }
+    .board-tabs .tab {
+      padding: .75rem 1.2rem; font-size: .82rem; font-weight: 600;
+      color: #6b7280; border-bottom: 2px solid transparent;
+      white-space: nowrap; cursor: pointer; transition: all .15s; text-decoration: none;
+    }
+    .board-tabs .tab:hover { color: #1a56db; }
+    .board-tabs .tab.active { color: #1a56db; border-bottom-color: #1a56db; }
+
+    /* ── Main layout ── */
+    .main-grid {
+      max-width: 860px; margin: 1.5rem auto; padding: 0 1rem;
+      display: grid; grid-template-columns: 1fr 260px; gap: 1.2rem;
+    }
+    @media (max-width: 720px) { .main-grid { grid-template-columns: 1fr; } }
+
+    /* ── Post cards ── */
+    .post-card {
+      background: #fff; border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 1.1rem 1.2rem;
+      margin-bottom: .75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+      transition: box-shadow .2s;
+      animation: slideDown .35s cubic-bezier(.22,.68,0,1.2) both;
+    }
+    .post-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.1); }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-18px) scale(.97); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .post-header { display: flex; align-items: center; gap: .7rem; margin-bottom: .7rem; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .post-meta .name { font-size: .82rem; font-weight: 700; color: #111827; }
+    .post-meta .board-tag {
+      font-size: .68rem; color: #1a56db; background: #eff6ff;
+      border-radius: 4px; padding: 1px 6px; font-weight: 600;
+    }
+    .post-meta .ts { font-size: .72rem; color: #9ca3af; margin-left: auto; }
+
+    .post-body {
+      font-size: .88rem; color: #374151; line-height: 1.7;
+      word-break: break-all;
+      /* raw_text 的雜訊故意讓它突出 */
+    }
+    .noise-char { color: #ef4444; font-weight: 700; font-family: monospace; }
+    .post-footer {
+      margin-top: .75rem; display: flex; gap: 1.2rem;
+      font-size: .75rem; color: #9ca3af;
+    }
+    .post-footer span { cursor: pointer; transition: color .15s; }
+    .post-footer span:hover { color: #1a56db; }
+
+    /* ── Sidebar ── */
+    .sidebar-card {
+      background: #fff; border-radius: 12px; border: 1px solid #e5e7eb;
+      padding: 1rem 1.1rem; margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .sidebar-card h6 { font-size: .8rem; font-weight: 700; color: #374151; margin-bottom: .75rem; }
+    .stat-row { display: flex; justify-content: space-between; font-size: .8rem; margin-bottom: .4rem; }
+    .stat-row .key { color: #6b7280; }
+    .stat-row .val { font-weight: 700; color: #111827; font-family: monospace; }
+    #stat-total { color: #dc2626; }
+
+    /* ── Scrolling ticker ── */
+    .ticker-wrap {
+      background: #fff3cd; border-radius: 6px; overflow: hidden;
+      border: 1px solid #fde68a; margin-bottom: 1rem;
+      font-size: .73rem; color: #92400e; padding: .4rem .8rem;
+      white-space: nowrap;
+    }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 3rem; color: #9ca3af; font-size: .9rem; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="forum-nav">
+  <span class="brand">🎓 逢大板</span>
+  <div class="nav-links">
+    <a href="#">熱門</a><a href="#">最新</a><a href="#">訂閱</a>
+  </div>
+  <div class="live-badge"><span class="pulse-dot"></span> 直播中</div>
+  <!-- 連線異常警告（預設隱藏）-->
+  <span id="conn-err" style="display:none; background:#dc2626; color:#fff; font-size:.7rem;
+        font-weight:700; padding:3px 10px; border-radius:20px; margin-left:.5rem; animation: errBlink 1s ease-in-out infinite;">
+    ⚠ 連線異常，重試中...
+  </span>
+</nav>
+<style>
+  @keyframes errBlink { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+  .flag-alert {
+    background: linear-gradient(90deg,#7c3aed,#db2777);
+    color:#fff; font-weight:700; border-radius:6px;
+    padding:.3rem .75rem; font-size:.78rem; font-family:monospace;
+    box-shadow: 0 0 12px rgba(219,39,119,.5);
+    animation: flagPulse .8s ease-in-out infinite alternate;
+  }
+  @keyframes flagPulse { from{box-shadow:0 0 6px rgba(219,39,119,.4);} to{box-shadow:0 0 18px rgba(219,39,119,.8);} }
+</style>
+
+<!-- Warning banner -->
+<div class="warning-banner">
+  <span class="warning-icon">⚠️</span>
+  系統警告：目前遭受惡意程式攻擊，版面出現異常字元與個資外洩風險，工程團隊搶修中...
+  <span class="warning-icon">⚠️</span>
+</div>
+
+<!-- Board tabs -->
+<div class="board-tabs">
+  <a class="tab active" href="#">即時動態</a>
+  <a class="tab" href="#">校園生活</a>
+  <a class="tab" href="#">課業問題</a>
+  <a class="tab" href="#">美食情報</a>
+  <a class="tab" href="#">二手買賣</a>
+  <a class="tab" href="#">感情版</a>
+</div>
+
+<!-- Main grid -->
+<div class="main-grid">
+
+  <!-- Feed -->
+  <div>
+    <div id="feed">
+      <div class="empty-state" id="loading-hint">連線中，載入留言...</div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div>
+    <div class="sidebar-card">
+      <h6>📊 即時統計</h6>
+      <div class="stat-row"><span class="key">已載入留言</span><span class="val" id="stat-total">0</span></div>
+      <div class="stat-row"><span class="key">最後更新</span><span class="val" id="stat-ts">—</span></div>
+      <div class="stat-row"><span class="key">下次更新</span><span class="val" id="stat-next">—</span></div>
+      <div class="stat-row"><span class="key">伺服器</span><span class="val">:5000</span></div>
+    </div>
+
+    <div class="sidebar-card">
+      <h6>🔥 熱門看板</h6>
+      <div style="font-size:.8rem; color:#374151; line-height:2;">
+        <div>📌 校園生活 <span class="text-muted" style="font-size:.7rem;">· 2.1k 人</span></div>
+        <div>📌 課業問題 <span class="text-muted" style="font-size:.7rem;">· 1.8k 人</span></div>
+        <div>📌 美食情報 <span class="text-muted" style="font-size:.7rem;">· 1.3k 人</span></div>
+        <div>📌 即時動態 <span class="text-muted" style="font-size:.7rem;">· 🔴 直播</span></div>
+      </div>
+    </div>
+
+    <div class="sidebar-card" style="border-color:#fca5a5; background:#fff5f5;">
+      <h6 style="color:#dc2626;">🚨 資安警示</h6>
+      <p style="font-size:.75rem; color:#6b7280; margin:0; line-height:1.6;">
+        目前偵測到部分留言含有<strong style="color:#dc2626;">手機號碼</strong>、
+        <strong style="color:#dc2626;">Email</strong>、
+        <strong style="color:#dc2626;">LINE ID</strong>，
+        個人資料正在外洩中。請勿點擊任何可疑連結。
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const NAMES   = ['匿名鵝', '小逢大', '夜貓子', '學霸助教', '打工人甲', '選課難民', '微積分受害者', '雞排控', '宿舍受難者', 'Debug 人生'];
+  const BOARDS  = ['即時動態', '校園生活', '課業問題', '美食情報', '閒聊廢文'];
+  const COLORS  = ['#6366f1','#8b5cf6','#ec4899','#f43f5e','#f97316','#eab308','#22c55e','#14b8a6','#0ea5e9','#3b82f6'];
+  const REACTS  = ['👍','❤️','😂','😮','😢'];
+
+  let totalCount = 0;
+  let nextTick   = 0;
+
+  // ── Deduplication：用 UUID 去重 ──
+  const seenIds = new Set();
+
+  // ── 連線狀態 UI ──
+  function setConnOk()  { document.getElementById('conn-err').style.display = 'none'; }
+  function setConnFail(){ document.getElementById('conn-err').style.display = 'inline-block'; }
+
+  // ── 雜訊高亮 ──
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function highlightNoise(text) {
+    return esc(text).replace(
+      /((?:[^\w\u4e00-\u9fff，。？！、\s]){2,})/g,
+      '<span class="noise-char">$1</span>'
+    );
+  }
+
+  // ── Flag 高亮（大秘寶！）——同時支援 dirty {A1!B2@C3#D4} 與 clean 格式 ──
+  function highlightFlag(text) {
+    return text.replace(
+      /(SYSTEM_FLAG_(?:\{[A-Z0-9!@#]+\}|[A-Z0-9]{8}))/g,
+      '<span class="flag-alert">🚩 $1</span>'
+    );
+  }
+
+  // ── 建立 Card ──
+  function buildCard(msg) {
+    const name  = NAMES[Math.floor(Math.random() * NAMES.length)];
+    const board = BOARDS[Math.floor(Math.random() * BOARDS.length)];
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const ts    = new Date().toLocaleTimeString('zh-Hant', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    const likes = Math.floor(Math.random() * 80);
+    const cmts  = Math.floor(Math.random() * 20);
+
+    // 先 esc 雜訊，再疊加 flag 高亮
+    const bodyHtml = highlightFlag(highlightNoise(msg.raw_text));
+    const hasFlag  = /SYSTEM_FLAG_/.test(msg.raw_text);
+
+    const card = document.createElement('div');
+    card.className = 'post-card' + (hasFlag ? ' flag-card' : '');
+    if (hasFlag) card.style.cssText = 'border-color:#7c3aed; box-shadow:0 0 0 2px rgba(124,58,237,.25);';
+    card.innerHTML = `
+      <div class="post-header">
+        <div class="avatar" style="background:${color}">${name[0]}</div>
+        <div class="post-meta">
+          <div class="name">${name} <span class="board-tag">${board}</span>
+            ${hasFlag ? '<span style="color:#db2777;font-size:.7rem;font-weight:700;"> 🚩 FLAG DETECTED</span>' : ''}
+          </div>
+        </div>
+        <span class="ts">${ts}</span>
+      </div>
+      <div class="post-body">${bodyHtml}</div>
+      <div class="post-footer">
+        <span>👍 ${likes}</span>
+        <span>💬 ${cmts}</span>
+        ${REACTS[Math.floor(Math.random()*REACTS.length)]} 留言
+        <span style="margin-left:auto;">⚠️ 回報</span>
+      </div>`;
+    return card;
+  }
+
+  // ── Fetch & prepend（含 Dedup + Graceful Degradation）──
+  async function fetchAndUpdate() {
+    try {
+      const res = await fetch('/api/live_chat?source=internal_forum');
+
+      // Graceful Degradation：非 200 也要處理
+      if (!res.ok) {
+        setConnFail();
+        scheduleNext();
+        return;
+      }
+
+      const data = await res.json();
+      setConnOk();
+
+      document.getElementById('loading-hint')?.remove();
+
+      const feed = document.getElementById('feed');
+      const msgs = data.messages || [];
+
+      // ── Dedup：只 prepend 沒看過 id 的留言 ──
+      const newMsgs = msgs.filter(m => !seenIds.has(m.id));
+      newMsgs.forEach(m => seenIds.add(m.id));
+
+      for (let i = newMsgs.length - 1; i >= 0; i--) {
+        feed.prepend(buildCard(newMsgs[i]));
+        totalCount++;
+      }
+
+      // 上限 30 張
+      const cards = feed.querySelectorAll('.post-card');
+      if (cards.length > 30)
+        for (let i = 30; i < cards.length; i++) cards[i].remove();
+
+      document.getElementById('stat-total').textContent = totalCount;
+      document.getElementById('stat-ts').textContent    = new Date().toLocaleTimeString('zh-Hant',
+        {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+    } catch (e) {
+      // 網路斷線 / 伺服器關閉
+      setConnFail();
+      console.warn('fetch failed', e);
+    }
+
+    scheduleNext();
+  }
+
+  function scheduleNext() {
+    const delay = 3000 + Math.random() * 2000;
+    nextTick = Math.round(delay / 1000);
+    countdown();
+    setTimeout(fetchAndUpdate, delay);
+  }
+
+  function countdown() {
+    const el = document.getElementById('stat-next');
+    if (!el) return;
+    el.textContent = nextTick + 's';
+    if (nextTick > 0) { nextTick--; setTimeout(countdown, 1000); }
+  }
+
+  fetchAndUpdate();
+</script>
+</body>
+</html>

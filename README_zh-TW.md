@@ -23,7 +23,10 @@
 | --- | --- | --- |
 | **Week 02** | [📂 Week02_0306_demo](./Week02_0306_demo/) | 開發環境建置、uv 基本操作、打字挑戰遊戲實作 |
 | **Week 03** | [📂 Week03_0313_demo](./Week03_0313_demo/) | - |
-| **Week 04** | 🚧 *稍後更新* | - |
+| **Week 04** | [📂 Week04_0319_demo](./Week04_0319_demo/) | 課堂範例 |
+| **Week 05** | [📂 Week05_0327_demo](./Week05_0327_demo/) | Flask 伺服器與 API Gallery |
+| **Week 07** | [📂 Week7_0410_demo](./Week7_0410_demo/) | Django F1 奇幻經理系統 |
+| **Week 08** | [📂 Week8_0417_demo](./Week8_0417_demo/) | 批次評分系統與 Mock Server |
 
 *(助教每週會持續更新此表格...)*
 

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/chenbaisong/.claude/plugins/cache/claude-plugins-official/playground/d53f6ca4cdb0/skills/playground/templates/**)",
+      "Bash(open /Users/chenbaisong/demo_repo/Programming_Course_2026/Week04_0319_demo/html_css_playground.html)",
+      "Bash(open /Users/chenbaisong/demo_repo/Programming_Course_2026/Week04_0319_demo/web_inspector_demo.html)",
+      "Bash(git push:*)",
+      "Bash(uv run:*)",
+      "Read(//Users/chenbaisong/.antigravity/antigravity/bin/**)",
+      "Bash(gemini --version)",
+      "Bash(gemini -p \"reply ok\")",
+      "Bash(python3 -c \"import fastf1; print\\(fastf1.__version__\\)\")",
+      "Bash(uv --version)",
+      "Bash(uv venv:*)",
+      "Bash(uv pip:*)"
+    ]
+  }
+}
